@@ -6,7 +6,7 @@ const prisma = new PrismaService();
 
 export async function publisherFactory() {
     const data = Factory.define('publisher')
-        .attr('name', () => casual.name)
+        .attr('name', () => casual.full_name)
         .build();
 
     return prisma.publisher.create({

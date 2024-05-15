@@ -6,7 +6,7 @@ const prisma = new PrismaService();
 
 export async function authorFactory() {
     const data = Factory.define('author')
-        .attr('name', () => casual.name)
+        .attr('name', () => casual.full_name)
         .build();
 
     return prisma.author.create({

@@ -10,12 +10,12 @@ export async function categorySeeder() {
       continue;
     }
 
-    await prisma.category.create({
+    const res = await prisma.category.create({
       data: {
         name: CategoryEnumHelper.getLabel(value),
         name_normalized: value
       },
     });
-    console.log(`[INFO]: Category ${value} created`);
+    console.log(`[INFO]: Category ${value} created with id:`, res.id);
   }
 }
