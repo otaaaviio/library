@@ -1,0 +1,156 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int     @id @default(autoincrement())
+  email           String
+  name            String
+  is_admin        Boolean @default(false)
+  hashed_password String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  Sessions Session[]
+
+  CreatedBooks      Book[]      @relation("BookCreatedBy")
+  UpdatedBooks      Book[]      @relation("BookUpdatedBy")
+  CreatedReviews    Review[]    @relation("ReviewCreatedBy")
+  UpdatedReviews    Review[]    @relation("ReviewUpdatedBy")
+  CreatedAuthors    Author[]    @relation("AuthorCreatedBy")
+  UpdatedAuthors    Author[]    @relation("AuthorUpdatedBy")
+  CreatedPublishers Publisher[] @relation("PublisherCreatedBy")
+  UpdatedPublishers Publisher[] @relation("PublisherUpdatedBy")
+
+  @@index([name, deleted_at], name: "idx_user_name_deleted_at")
+  @@map("users")
+}
+
+model Session {
+  id         String  @id @default(uuid())
+  user_id    Int
+  ip         String?
+  user_agent String?
+  active     Boolean @default(value: true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  User User @relation(fields: [user_id], references: [id])
+
+  @@map("sessions")
+}
+
+model Book {
+  id           Int      @id @default(autoincrement())
+  title        String
+  publisher_id Int
+  author_id    Int
+  category_id  Int
+  image_url    String?
+  description  String?
+  published_at DateTime
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by Int
+  updated_by Int
+
+  Publisher Publisher @relation(fields: [publisher_id], references: [id])
+  Author    Author    @relation(fields: [author_id], references: [id])
+  Category  Category  @relation(fields: [category_id], references: [id])
+  CreatedBy User      @relation("BookCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User      @relation("BookUpdatedBy", fields: [updated_by], references: [id])
+  Reviews   Review[]
+
+  @@index([title, deleted_at], name: "idx_book_name_deleted_at")
+  @@map("books")
+}
+
+model Review {
+  id      Int    @id @default(autoincrement())
+  book_id Int
+  rating  Float
+  comment String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by Int
+  updated_by Int
+
+  Book      Book @relation(fields: [book_id], references: [id])
+  CreatedBy User @relation("ReviewCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User @relation("ReviewUpdatedBy", fields: [updated_by], references: [id])
+
+  @@map("reviews")
+}
+
+model Author {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by Int
+  updated_by Int
+
+  Books     Book[]
+  CreatedBy User   @relation("AuthorCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User   @relation("AuthorUpdatedBy", fields: [updated_by], references: [id])
+
+  @@index([name, deleted_at], name: "idx_author_name_deleted_at")
+  @@map("authors")
+}
+
+model Publisher {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by Int
+  updated_by Int
+
+  Books     Book[]
+  CreatedBy User   @relation("PublisherCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User   @relation("PublisherUpdatedBy", fields: [updated_by], references: [id])
+
+  @@index([name, deleted_at], name: "idx_publisher_name_deleted_at")
+  @@map("publishers")
+}
+
+model Category {
+  id              Int      @id @default(autoincrement())
+  name            String
+  name_normalized CATEGORY @unique
+
+  Books Book[]
+
+  @@index([name, name_normalized], name: "idx_category_name_normalized")
+  @@map("categories")
+}
+
+enum CATEGORY {
+  FANTASY
+  SCIENCE_FICTION
+  MYSTERY
+  ROMANCE
+  HORROR
+  THRILLER
+  HISTORICAL_FICTION
+  BIOGRAPHY
+  SELF_HELP
+  POETRY
+}
