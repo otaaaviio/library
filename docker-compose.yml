@@ -1,47 +1,51 @@
 services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    container_name: library-db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: library-db
-    ports:
-      - "5433:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    networks:
-      - library
-
-  redis:
-    image: redis:alpine
-    restart: unless-stopped
-    container_name: library-redis
-    ports:
-      - "6379:6379"
-    networks:
-      - library
-
-  node:
-    build:
-      context: .
-    image: library-node
+  api:
     container_name: library-node
+    image: node:20-alpine
+    restart: always
+    tty: true
     depends_on:
       - db
       - redis
     volumes:
       - .:/usr/app
-    networks:
-      - library
+      - /usr/app/node_modules
+    working_dir: '/usr/app'
+    command: >
+      sh -c "npm install &&
+      npx prisma generate &&
+      npm run migrate &&
+      npm run seeder category &&
+      npm run start:dev -- --preserveWatchOutput"
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE_NAME=${DB_DATABASE_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - PORT=${PORT}
+
+  db:
+    container_name: library-db
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
     ports:
-      - "3000:3000"
+      - '${DB_PORT}:${DB_PORT}'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  redis:
+    container_name: library-redis
+    image: redis:alpine
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT}:${REDIS_PORT}'
+    volumes:
+      - redis_data:/data
 
 volumes:
-  db-data:
-    driver: local
-
-networks:
-  library:
-    driver: bridge
+  db_data:
+  redis_data:
