@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import {PrismaService} from "../../prisma/prisma.service";
+import {TokenPayload} from "./sessions.validation";
 
 @Injectable()
 export class SessionsService {
@@ -11,40 +12,52 @@ export class SessionsService {
     ) {
     }
 
-    public async create(body: any) {
-        const user = await this.prisma.user.findUnique({
-            where: {login},
+    private async checkCredentials(email: string, password: string) {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                email: email,
+                deleted_at: null,
+            }
         });
         if (!user) throw new Error('User not found');
+
         const passwordMatched = await bcrypt.compare(password, user.password);
         if (!passwordMatched) throw new Error('Invalid password');
 
+        return user;
+    }
+
+    public async authenticateUser(user: any, ip: string, user_agent: string) {
         await this.prisma.session.updateMany({
             where: {
-                user: {
-                    login,
-                },
+                user_id: user.id,
                 active: true,
             },
             data: {
                 active: false,
-                updatedAt: new Date().toISOString(),
             },
         });
 
         const session = await this.prisma.session.create({
             data: {
-                userId: user.id,
+                user_id: user.id,
                 ip,
-                userAgent,
-                createdAt: new Date().toISOString(),
+                user_agent,
             },
         });
 
         const payload: TokenPayload = {
-            sessionId: session.id,
-            userId: user.id,
+            session_id: session.id,
+            user_id: user.id,
         };
+
+        return payload;
+    }
+
+    public async create(req: any, ip: string, user_agent: string) {
+        const user = await this.checkCredentials(req.email, req.password);
+
+        const payload = await this.authenticateUser(user, ip, user_agent);
 
         return {token: this.jwtService.sign(payload)};
     }
@@ -56,7 +69,6 @@ export class SessionsService {
                 user_id: token.user_id,
             },
             data: {
-                updated_at: new Date().toISOString(),
                 active: false,
             },
         });

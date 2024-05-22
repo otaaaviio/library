@@ -1,7 +1,7 @@
 import {IsEmail, Length} from "class-validator";
 
 interface TokenPayload {
-    session_id: number;
+    session_id: string;
     user_id: number;
 }
 

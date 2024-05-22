@@ -1,6 +1,6 @@
-import {Controller, Post, Body, Logger, HttpException} from '@nestjs/common';
+import {Controller, Post, Body, Logger, HttpException, Param, Headers} from '@nestjs/common';
 import {SessionsService} from "./sessions.service";
-import {SessionDto} from "./sessions.validation";
+import {SessionDto, TokenPayload} from "./sessions.validation";
 
 @Controller('users')
 export class SessionsController {
@@ -10,9 +10,13 @@ export class SessionsController {
     }
 
     @Post()
-    login(@Body() data: SessionDto) {
+    login(
+        @Body() data: SessionDto,
+        @Headers('x-real-ip') ip: string,
+        @Headers('user-agent') user_agent: string
+    ) {
         try {
-            return this.sessionsService.create(data);
+            return this.sessionsService.create(data, ip, user_agent);
         } catch (err) {
             this.logger.error(`Failed to login: ${err}`);
             throw new HttpException(err?.message || 'An error occurred', 400);
@@ -20,9 +24,9 @@ export class SessionsController {
     }
 
     @Post()
-    logout() {
+    logout(@Param('token') token: TokenPayload) {
         try {
-            return this.sessionsService.delete();
+            return this.sessionsService.delete(token);
         } catch (err) {
             this.logger.error(`Failed to logout: ${err}`);
             throw new HttpException(err?.message || 'An error occurred', 400);
