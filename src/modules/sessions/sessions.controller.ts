@@ -7,7 +7,7 @@ import {
     Headers,
     Res,
     Req,
-    Param,
+    Param, Get,
 } from '@nestjs/common';
 import {SessionsService} from './sessions.service';
 import {SessionDto} from './sessions.validation';
@@ -42,14 +42,13 @@ export class SessionsController {
         }
     }
 
-    @Post('/logout/:id')
+    @Get('/logout')
     async logout(
-        @Param('id') id: string,
         @Req() req,
         @Res() res,
     ) {
         try {
-            await this.sessionsService.delete(Number(id), req.cookies?.['token']);
+            await this.sessionsService.delete(Number(req.user.id), req.cookies?.['token']);
             res.clearCookie('token', {
                 path: '/',
                 secure: process.env.NODE_ENV === 'production',

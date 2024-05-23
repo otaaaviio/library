@@ -1,12 +1,14 @@
-import {ExceptionFilter, Catch, ArgumentsHost} from '@nestjs/common';
+import {ExceptionFilter, Catch, ArgumentsHost, HttpException, BadRequestException} from '@nestjs/common';
 import {Prisma} from '@prisma/client';
 import {Response} from 'express';
+import {ValidationError} from "class-validator";
 
 @Catch(Error)
 export class ErrorHandlerMiddleware implements ExceptionFilter {
     catch(exception: Error, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
+
 
         let message = 'An error occurred';
         let statusCode = 500;
@@ -32,13 +34,15 @@ export class ErrorHandlerMiddleware implements ExceptionFilter {
                 default:
                     break;
             }
-        } else {
-            message = exception.message;
+        } else if (exception instanceof HttpException) {
+            message = exception.getResponse()['message'];
+            statusCode = exception.getStatus();
         }
 
         response.status(statusCode).json({
             statusCode: statusCode,
             message: message,
         });
+
     }
 }

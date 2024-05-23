@@ -11,6 +11,7 @@ import {JwtModule} from '@nestjs/jwt';
 import {PrismaModule} from './modules/prisma/prisma.module';
 import {AuthorsModule} from "./modules/authors/authors.module";
 import {VerifyOwnershipMiddleware} from "./middlewares/verifyOwnership.middleware";
+import {PublishersModule} from "./modules/publishers/publishers.module";
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import {VerifyOwnershipMiddleware} from "./middlewares/verifyOwnership.middlewar
         }),
         PrismaModule,
         AuthorsModule,
+        PublishersModule,
         UsersModule,
         SessionsModule,
     ],
@@ -28,7 +30,6 @@ export class AppModule implements NestModule {
         consumer
             .apply(AuthMiddleware)
             .exclude(
-                {path: 'sessions/logout/:id', method: RequestMethod.POST},
                 {path: 'sessions/login', method: RequestMethod.POST},
                 {path: 'users/register', method: RequestMethod.POST},
             )

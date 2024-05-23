@@ -6,7 +6,7 @@ import {
     Param,
     Delete,
     Logger,
-    Put, Res
+    Put, Res, Req
 } from '@nestjs/common';
 import {UsersService} from './users.service';
 import {CreateUserDto, UpdateUserDto} from './user.validation';
@@ -63,9 +63,9 @@ export class UsersController {
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: string, @Res() res) {
+    async delete(@Param('id') id: string, @Res() res, @Req() req) {
         try {
-            await this.usersService.remove(Number(id));
+            await this.usersService.remove(Number(id), req.user);
             return res.status(200).json({message: `User with ID ${id} successfully deleted`});
         } catch (err) {
             this.logger.error(`Failed to delete user:\n ${err}`);
