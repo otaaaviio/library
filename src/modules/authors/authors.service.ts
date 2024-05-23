@@ -1,9 +1,10 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {PrismaService} from '../prisma/prisma.service';
 import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
 import {paginate, validateFilters} from '../utils/utils';
 import {CreateOrEditAuthor} from "./authors.validation";
+import {Request} from "express";
 
 @Injectable()
 export class AuthorsService {
@@ -19,10 +20,15 @@ export class AuthorsService {
         });
     };
 
-    async create(data: CreateOrEditAuthor) {
+    async create(data: CreateOrEditAuthor, user_id: number) {
         const author = this.prisma.author.create({
             data: {
                 name: data.name,
+                CreatedBy: {
+                    connect: {
+                        id: user_id,
+                    },
+                }
             },
             select: {
                 id: true,
@@ -92,13 +98,29 @@ export class AuthorsService {
         });
     }
 
-    async update(id: number, data: CreateOrEditAuthor) {
+    async update(id: number, data: CreateOrEditAuthor, user: Request['user']) {
+        const author = await this.prisma.author.findUnique({
+            where: {
+                id: id,
+                deleted_at: null,
+            },
+        });
+
+        if (author.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to update this author', 403);
+
         const author_updated = this.prisma.author.update({
             where: {
                 id: id,
                 deleted_at: null,
             },
-            data: data,
+            data: {
+                ...data,
+                UpdatedBy: {
+                    connect: {
+                        id: user.id,
+                    },
+                }
+            },
             select: {
                 id: true,
                 name: true,
@@ -110,7 +132,16 @@ export class AuthorsService {
         return author_updated;
     }
 
-    async remove(id: number) {
+    async remove(id: number, user: Request['user']) {
+        const author = await this.prisma.author.findUnique({
+            where: {
+                id: id,
+                deleted_at: null,
+            },
+        });
+
+        if (author.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to delete this author', 403);
+
         const author_deleted = this.prisma.author.update({
             where: {
                 id: id,
