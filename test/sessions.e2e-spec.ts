@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import {Test} from '@nestjs/testing';
-import {AppModule} from '../../app.module';
-import {userFactory} from "../../../prisma/factories/UserFactory";
+import {AppModule} from '../src/app.module';
+import {userFactory} from "../prisma/factories/UserFactory";
 
 describe('Sessions Controller', () => {
     let app;

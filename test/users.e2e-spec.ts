@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import {Test} from '@nestjs/testing';
-import {AppModule} from '../../app.module';
+import {AppModule} from '../src/app.module';
 
 describe('Users Controller', () => {
     let app;
