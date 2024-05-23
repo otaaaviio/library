@@ -1,71 +1,76 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Logger,
-  HttpException,
-  Put,
+    Controller,
+    Get,
+    Post,
+    Body,
+    Param,
+    Delete,
+    Logger,
+    HttpException,
+    Put, Res
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto } from './user.validation';
-import {PaginationQueryParams} from "../utils/validation";
+import {UsersService} from './users.service';
+import {CreateUserDto, UpdateUserDto} from './user.validation';
+import {PaginationQueryParams} from '../utils/validation';
 
 @Controller('users')
 export class UsersController {
-  private logger = new Logger(UsersController.name);
+    private logger = new Logger(UsersController.name);
 
-  constructor(private readonly usersService: UsersService) {}
-
-  @Post('/register')
-  register(@Body() data: CreateUserDto) {
-    try {
-      return this.usersService.create(data);
-    } catch (err) {
-      this.logger.error(`Failed to login: ${err}`);
-      throw new HttpException(err?.message || 'An error occurred', 400);
+    constructor(private readonly usersService: UsersService) {
     }
-  }
 
-  @Get()
-  findAll(@Body() params: PaginationQueryParams) {
-    try {
-      return this.usersService.findAll(params);
-    } catch (err) {
-      this.logger.error(`Failed to get users: ${err}`);
-      throw new HttpException(err?.message || 'An error occurred', 400);
+    @Post('/register')
+    async register(@Body() data: CreateUserDto, @Res() res) {
+        try {
+            const user = await this.usersService.create(data);
+            return res.status(201).json({message: 'User successfully registered: ', user: user});
+        } catch (err) {
+            this.logger.error(`Failed to register user: ${err}`);
+            throw err;
+        }
     }
-  }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    try {
-      return this.usersService.findOne(Number(id));
-    } catch (err) {
-      this.logger.error(`Failed to get user: ${err}`);
-      throw new HttpException(err?.message || 'An error occurred', 400);
+    @Get()
+    async findAll(@Body() params: PaginationQueryParams) {
+        try {
+            return this.usersService.findAll(params);
+        } catch (err) {
+            this.logger.error(`Failed to get users: ${err}`);
+            throw err;
+        }
     }
-  }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() data: UpdateUserDto) {
-    try {
-      return this.usersService.update(Number(id), data);
-    } catch (err) {
-      this.logger.error(`Failed to update user: ${err}`);
-      throw new HttpException(err?.message || 'An error occurred', 400);
+    @Get(':id')
+    async findOne(@Param('id') id: string, @Res() res) {
+        try {
+            const user = await this.usersService.findOne(Number(id));
+            return user ?? res.status(404).send({message: 'User not found'});
+        } catch (err) {
+            this.logger.error(`Failed to get user: ${err}`);
+            throw err;
+        }
     }
-  }
 
-  @Delete(':id')
-  delete(@Param('id') id: string) {
-    try {
-      return this.usersService.remove(Number(id));
-    } catch (err) {
-      this.logger.error(`Failed to delete user: ${err}`);
-      throw new HttpException(err?.message || 'An error occurred', 400);
+    @Put(':id')
+    async update(@Param('id') id: string, @Body() data: UpdateUserDto, @Res() res) {
+        try {
+            const user = await this.usersService.update(Number(id), data);
+            return res.status(200).json({message: 'User successfully updated: ', user: user});
+        } catch (err) {
+            this.logger.error(`Failed to update user: ${err}`);
+            throw err;
+        }
     }
-  }
+
+    @Delete(':id')
+    async delete(@Param('id') id: string, @Res() res) {
+        try {
+            await this.usersService.remove(Number(id));
+            return res.status(200).json({message: `User with ID ${id} successfully deleted`});
+        } catch (err) {
+            this.logger.error(`Failed to delete user: ${err}`);
+            throw err;
+        }
+    }
 }

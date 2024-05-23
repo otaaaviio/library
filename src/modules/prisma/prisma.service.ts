@@ -40,7 +40,6 @@ export class PrismaService
   async onModuleInit() {
     try {
       await this.$connect();
-      Logger.log('Prisma connected');
     } catch (err) {
       Logger.error('Failed to connect to Prisma:', err);
       throw new err();

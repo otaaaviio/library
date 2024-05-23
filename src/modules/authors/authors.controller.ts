@@ -27,17 +27,17 @@ export class AuthorsController {
             return res.status(201).send({message: 'Author created successfully', author: author});
         } catch (err) {
             this.logger.error(`Failed to create author: ${err}`);
-            throw new HttpException(err?.meta.cause || 'An error occurred', 400);
+            throw err;
         }
     }
 
     @Get()
-    findAll(@Body() params: PaginationQueryParams) {
+    async findAll(@Body() params: PaginationQueryParams) {
         try {
             return this.authorsService.findAll(params);
         } catch (err) {
             this.logger.error(`Failed to get authors: ${err}`);
-            throw new HttpException(err?.meta.cause || 'An error occurred', 400);
+            throw err;
         }
     }
 
@@ -48,7 +48,7 @@ export class AuthorsController {
             return author ?? res.status(404).send({message: 'Author not found'});
         } catch (err) {
             this.logger.error(`Failed to get author: ${err}`);
-            throw new HttpException(err?.meta.cause || 'An error occurred', 400);
+            throw err;
         }
     }
 
@@ -59,7 +59,7 @@ export class AuthorsController {
             return res.status(200).send({message: 'Author updated successfully', author});
         } catch (err) {
             this.logger.error(`Failed to update author: ${err}`);
-            throw new HttpException(err?.meta.cause || 'An error occurred', 400);
+            throw err;
         }
     }
 
@@ -70,7 +70,7 @@ export class AuthorsController {
             return res.status(200).send({message: `Author with ID ${id} deleted successfully`});
         } catch (err) {
             this.logger.error(`Failed to delete author: ${err}`);
-            throw new HttpException(err?.meta.cause || 'An error occurred', 400);
+            throw err;
         }
     }
 }
