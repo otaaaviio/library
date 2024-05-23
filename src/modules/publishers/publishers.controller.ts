@@ -6,7 +6,7 @@ import {
     Param,
     Delete,
     Logger,
-    Put, Res,
+    Put, Res, Req,
 } from '@nestjs/common';
 import {PaginationQueryParams} from '../utils/validation';
 import {CreateOrEditPublisher} from "./publishers.validation";
@@ -20,9 +20,9 @@ export class PublishersController {
     }
 
     @Post()
-    async create(@Body() data: CreateOrEditPublisher, @Res() res) {
+    async create(@Body() data: CreateOrEditPublisher, @Res() res, @Req() req) {
         try {
-            const publisher = await this.publishersService.create(data);
+            const publisher = await this.publishersService.create(data, Number(req.user.id));
             return res.status(201).send({message: 'Publisher created successfully', publisher: publisher});
         } catch (err) {
             this.logger.error(`Failed to create publisher:\n ${err}`);
@@ -52,9 +52,9 @@ export class PublishersController {
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() data: CreateOrEditPublisher, @Res() res) {
+    async update(@Param('id') id: string, @Body() data: CreateOrEditPublisher, @Res() res, @Req() req) {
         try {
-            const publisher = await this.publishersService.update(Number(id), data);
+            const publisher = await this.publishersService.update(Number(id), data, req.user);
             return res.status(200).send({message: 'Publisher updated successfully', publisher});
         } catch (err) {
             this.logger.error(`Failed to update publisher:\n ${err}`);
@@ -63,9 +63,9 @@ export class PublishersController {
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: string, @Res() res) {
+    async delete(@Param('id') id: string, @Res() res, @Req req) {
         try {
-            await this.publishersService.remove(Number(id));
+            await this.publishersService.remove(Number(id), req.user);
             return res.status(200).send({message: `Publisher with ID ${id} deleted successfully`});
         } catch (err) {
             this.logger.error(`Failed to delete publisher:\n ${err}`);

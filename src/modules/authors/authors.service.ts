@@ -106,6 +106,7 @@ export class AuthorsService {
             },
         });
 
+        if (!author) throw new HttpException('Author not found', 404);
         if (author.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to update this author', 403);
 
         const author_updated = this.prisma.author.update({
@@ -140,6 +141,7 @@ export class AuthorsService {
             },
         });
 
+        if (!author) throw new HttpException('Author not found', 404);
         if (author.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to delete this author', 403);
 
         const author_deleted = this.prisma.author.update({

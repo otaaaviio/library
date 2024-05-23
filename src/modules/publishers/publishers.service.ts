@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {PrismaService} from '../prisma/prisma.service';
 import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
@@ -19,10 +19,15 @@ export class PublishersService {
         });
     };
 
-    async create(data: CreateOrEditPublisher) {
+    async create(data: CreateOrEditPublisher, user_id: number) {
         const publisher = this.prisma.publisher.create({
             data: {
                 name: data.name,
+                CreatedBy: {
+                    connect: {
+                        id: user_id,
+                    },
+                },
             },
             select: {
                 id: true,
@@ -92,13 +97,30 @@ export class PublishersService {
         });
     }
 
-    async update(id: number, data: CreateOrEditPublisher) {
+    async update(id: number, data: CreateOrEditPublisher, user: Request['user']) {
+        const publisher = await this.prisma.publisher.findUnique({
+            where: {
+                id: id,
+                deleted_at: null,
+            },
+        });
+
+        if (!publisher) throw new HttpException('Publisher not found', 404);
+        if (publisher.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to update this publisher', 403);
+
         const publisher_updated = this.prisma.publisher.update({
             where: {
                 id: id,
                 deleted_at: null,
             },
-            data: data,
+            data: {
+                ...data,
+                UpdatedBy: {
+                    connect: {
+                        id: user.id,
+                    },
+                },
+            },
             select: {
                 id: true,
                 name: true,
@@ -111,6 +133,16 @@ export class PublishersService {
     }
 
     async remove(id: number) {
+        const publisher = await this.prisma.publisher.findUnique({
+            where: {
+                id: id,
+                deleted_at: null,
+            },
+        });
+
+        if (!publisher) throw new HttpException('Publisher not found', 404);
+        if (publisher.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to delete this publisher', 403);
+
         const publisher_deleted = this.prisma.publisher.update({
             where: {
                 id: id,
