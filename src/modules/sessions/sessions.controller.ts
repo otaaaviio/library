@@ -37,7 +37,7 @@ export class SessionsController {
             });
             return res.status(200).json({message: 'Successfully logged in'});
         } catch (err) {
-            this.logger.error(`Failed to login: ${err}`);
+            this.logger.error(`Failed to login:\n ${err}`);
             throw err;
         }
     }
@@ -58,7 +58,7 @@ export class SessionsController {
             });
             return res.status(200).send({message: 'Logged out successfully'});
         } catch (err) {
-            this.logger.error(`Failed to logout: ${err}`);
+            this.logger.error(`Failed to logout:\n ${err}`);
             throw err;
         }
     }

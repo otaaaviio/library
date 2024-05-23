@@ -6,7 +6,6 @@ import {
     Param,
     Delete,
     Logger,
-    HttpException,
     Put, Res
 } from '@nestjs/common';
 import {UsersService} from './users.service';
@@ -26,7 +25,7 @@ export class UsersController {
             const user = await this.usersService.create(data);
             return res.status(201).json({message: 'User successfully registered: ', user: user});
         } catch (err) {
-            this.logger.error(`Failed to register user: ${err}`);
+            this.logger.error(`Failed to register user:\n ${err}`);
             throw err;
         }
     }
@@ -36,7 +35,7 @@ export class UsersController {
         try {
             return this.usersService.findAll(params);
         } catch (err) {
-            this.logger.error(`Failed to get users: ${err}`);
+            this.logger.error(`Failed to get users:\n ${err}`);
             throw err;
         }
     }
@@ -47,7 +46,7 @@ export class UsersController {
             const user = await this.usersService.findOne(Number(id));
             return user ?? res.status(404).send({message: 'User not found'});
         } catch (err) {
-            this.logger.error(`Failed to get user: ${err}`);
+            this.logger.error(`Failed to get user:\n ${err}`);
             throw err;
         }
     }
@@ -58,7 +57,7 @@ export class UsersController {
             const user = await this.usersService.update(Number(id), data);
             return res.status(200).json({message: 'User successfully updated: ', user: user});
         } catch (err) {
-            this.logger.error(`Failed to update user: ${err}`);
+            this.logger.error(`Failed to update user:\n ${err}`);
             throw err;
         }
     }
@@ -69,7 +68,7 @@ export class UsersController {
             await this.usersService.remove(Number(id));
             return res.status(200).json({message: `User with ID ${id} successfully deleted`});
         } catch (err) {
-            this.logger.error(`Failed to delete user: ${err}`);
+            this.logger.error(`Failed to delete user:\n ${err}`);
             throw err;
         }
     }

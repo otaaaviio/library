@@ -8,7 +8,6 @@ export class ErrorHandlerMiddleware implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
 
-
         let message = 'An error occurred';
         let statusCode = 500;
 

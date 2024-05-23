@@ -6,7 +6,6 @@ import {
     Param,
     Delete,
     Logger,
-    HttpException,
     Put, Res,
 } from '@nestjs/common';
 import {PaginationQueryParams} from '../utils/validation';
@@ -26,7 +25,7 @@ export class AuthorsController {
             const author = await this.authorsService.create(data);
             return res.status(201).send({message: 'Author created successfully', author: author});
         } catch (err) {
-            this.logger.error(`Failed to create author: ${err}`);
+            this.logger.error(`Failed to create author:\n ${err}`);
             throw err;
         }
     }
@@ -36,7 +35,7 @@ export class AuthorsController {
         try {
             return this.authorsService.findAll(params);
         } catch (err) {
-            this.logger.error(`Failed to get authors: ${err}`);
+            this.logger.error(`Failed to get authors:\n ${err}`);
             throw err;
         }
     }
@@ -47,7 +46,7 @@ export class AuthorsController {
             const author = await this.authorsService.findOne(Number(id));
             return author ?? res.status(404).send({message: 'Author not found'});
         } catch (err) {
-            this.logger.error(`Failed to get author: ${err}`);
+            this.logger.error(`Failed to get author:\n ${err}`);
             throw err;
         }
     }
@@ -58,7 +57,7 @@ export class AuthorsController {
             const author = await this.authorsService.update(Number(id), data);
             return res.status(200).send({message: 'Author updated successfully', author});
         } catch (err) {
-            this.logger.error(`Failed to update author: ${err}`);
+            this.logger.error(`Failed to update author:\n ${err}`);
             throw err;
         }
     }
@@ -69,7 +68,7 @@ export class AuthorsController {
             await this.authorsService.remove(Number(id));
             return res.status(200).send({message: `Author with ID ${id} deleted successfully`});
         } catch (err) {
-            this.logger.error(`Failed to delete author: ${err}`);
+            this.logger.error(`Failed to delete author:\n ${err}`);
             throw err;
         }
     }
