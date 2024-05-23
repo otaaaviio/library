@@ -3,7 +3,7 @@ import * as casual from "casual";
 import {publisherFactory} from "./PublisherFactory";
 import {authorFactory} from "./AuthorFactory";
 
-import { PrismaService } from '../../src/prisma/prisma.service';
+import { PrismaService } from '../../src/modules/prisma/prisma.service';
 import { CategoryEnumHelper } from '../../src/enums/CategoryEnum';
 
 const prisma = new PrismaService();

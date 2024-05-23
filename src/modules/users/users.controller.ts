@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './user.validation';
+import {PaginationQueryParams} from "../utils/validation";
 
 @Controller('users')
 export class UsersController {
@@ -29,9 +30,9 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Body() params: PaginationQueryParams) {
     try {
-      return this.usersService.findAll();
+      return this.usersService.findAll(params);
     } catch (err) {
       this.logger.error(`Failed to get users: ${err}`);
       throw new HttpException(err?.message || 'An error occurred', 400);

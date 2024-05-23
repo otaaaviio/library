@@ -8,7 +8,7 @@ import { UsersModule } from './modules/users/users.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
-import { PrismaModule } from './prisma/prisma.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
 
 @Module({
   imports: [

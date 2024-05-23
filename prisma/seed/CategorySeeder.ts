@@ -1,5 +1,5 @@
 import { CategoryEnumHelper } from '../../src/enums/CategoryEnum';
-import { PrismaService } from '../../src/prisma/prisma.service';
+import { PrismaService } from '../../src/modules/prisma/prisma.service';
 
 const prisma = new PrismaService();
 

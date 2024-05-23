@@ -1,7 +1,7 @@
 import {Factory} from "rosie";
 import * as casual from "casual";
 import * as bcrypt from "bcrypt"
-import { PrismaService } from '../../src/prisma/prisma.service';
+import { PrismaService } from '../../src/modules/prisma/prisma.service';
 
 const prisma = new PrismaService();
 
