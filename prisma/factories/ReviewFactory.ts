@@ -1,5 +1,5 @@
 import {Factory} from "rosie";
-import casual from "casual";
+import * as casual from "casual";
 import {userFactory} from "./UserFactory";
 import {bookFactory} from "./BookFactory";
 import { PrismaService } from '../../src/prisma/prisma.service';
@@ -21,7 +21,8 @@ export async function reviewFactory() {
         data: {
             ...data,
             Book: {connect: {id: book.id}},
-            User: {connect: {id: user.id}},
+            CreatedBy: {connect: {id: user.id}},
+            UpdatedBy: {connect: {id: user.id}},
         },
     });
 }

@@ -1,5 +1,5 @@
 import {Factory} from "rosie";
-import casual from "casual";
+import * as casual from "casual";
 import { PrismaService } from '../../src/prisma/prisma.service';
 
 const prisma = new PrismaService();

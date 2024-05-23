@@ -1,28 +1,28 @@
-import {IsEmail, IsNotEmpty, IsOptional, Length} from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, Length } from 'class-validator';
 
 class CreateUserDto {
-    @IsNotEmpty()
-    name: string;
+  @IsNotEmpty()
+  name: string;
 
-    @Length(6)
-    password: string;
+  @Length(6)
+  password: string;
 
-    @IsEmail()
-    email: string;
+  @IsEmail()
+  email: string;
 }
 
 class UpdateUserDto {
-    @IsNotEmpty()
-    @IsOptional()
-    name: string;
+  @IsNotEmpty()
+  @IsOptional()
+  name: string;
 
-    @Length(6)
-    @IsOptional()
-    password: string;
+  @Length(6)
+  @IsOptional()
+  password: string;
 
-    @IsEmail()
-    @IsOptional()
-    email: string;
+  @IsEmail()
+  @IsOptional()
+  email: string;
 }
 
-export {CreateUserDto, UpdateUserDto};
+export { CreateUserDto, UpdateUserDto };

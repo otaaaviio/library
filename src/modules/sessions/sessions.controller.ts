@@ -1,7 +1,17 @@
-import {Controller, Post, Body, Logger, HttpException, Headers, Res, Req, Param} from '@nestjs/common';
-import {SessionsService} from "./sessions.service";
-import {SessionDto} from "./sessions.validation";
-import {Response, Request} from "express";
+import {
+    Controller,
+    Post,
+    Body,
+    Logger,
+    HttpException,
+    Headers,
+    Res,
+    Req,
+    Param,
+} from '@nestjs/common';
+import {SessionsService} from './sessions.service';
+import {SessionDto} from './sessions.validation';
+import {Response, Request} from 'express';
 
 @Controller('sessions')
 export class SessionsController {
@@ -15,8 +25,7 @@ export class SessionsController {
         @Body() data: SessionDto,
         @Headers('x-real-ip') ip: string,
         @Headers('user-agent') user_agent: string,
-        @Req() req: Request,
-        @Res() res: Response
+        @Res() res: Response,
     ) {
         try {
             const token = await this.sessionsService.create(data, ip, user_agent);
@@ -35,9 +44,14 @@ export class SessionsController {
     }
 
     @Post('/logout/:id')
-    async logout(@Param('id') id: string, @Req() req: Request, @Res() res: Response) {
+    async logout(
+        @Param('id') id: string,
+        @Req() req: Request,
+        @Res() res: Response,
+    ) {
         try {
-            await this.sessionsService.delete(Number(id), req.cookies['token']);
+            const token = req.cookies?.['token'] ?? null;
+            await this.sessionsService.delete(Number(id), token);
             res.clearCookie('token', {
                 path: '/',
                 secure: process.env.NODE_ENV === 'production',

@@ -61,14 +61,14 @@ model Book {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
-  created_by Int
-  updated_by Int
+  created_by Int?
+  updated_by Int?
 
   Publisher Publisher @relation(fields: [publisher_id], references: [id])
   Author    Author    @relation(fields: [author_id], references: [id])
   Category  Category  @relation(fields: [category_id], references: [id])
-  CreatedBy User      @relation("BookCreatedBy", fields: [created_by], references: [id])
-  UpdatedBy User      @relation("BookUpdatedBy", fields: [updated_by], references: [id])
+  CreatedBy User?     @relation("BookCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User?     @relation("BookUpdatedBy", fields: [updated_by], references: [id])
   Reviews   Review[]
 
   @@map("books")
@@ -100,12 +100,12 @@ model Author {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
-  created_by Int
-  updated_by Int
+  created_by Int?
+  updated_by Int?
 
   Books     Book[]
-  CreatedBy User   @relation("AuthorCreatedBy", fields: [created_by], references: [id])
-  UpdatedBy User   @relation("AuthorUpdatedBy", fields: [updated_by], references: [id])
+  CreatedBy User?  @relation("AuthorCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User?  @relation("AuthorUpdatedBy", fields: [updated_by], references: [id])
 
   @@map("authors")
 }
@@ -117,12 +117,12 @@ model Publisher {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
-  created_by Int
-  updated_by Int
+  created_by Int?
+  updated_by Int?
 
   Books     Book[]
-  CreatedBy User   @relation("PublisherCreatedBy", fields: [created_by], references: [id])
-  UpdatedBy User   @relation("PublisherUpdatedBy", fields: [updated_by], references: [id])
+  CreatedBy User?  @relation("PublisherCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User?  @relation("PublisherUpdatedBy", fields: [updated_by], references: [id])
 
   @@map("publishers")
 }

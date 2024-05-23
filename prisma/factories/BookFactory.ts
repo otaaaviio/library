@@ -1,5 +1,5 @@
 import {Factory} from "rosie";
-import casual from "casual";
+import * as casual from "casual";
 import {publisherFactory} from "./PublisherFactory";
 import {authorFactory} from "./AuthorFactory";
 

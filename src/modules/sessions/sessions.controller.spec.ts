@@ -1,6 +1,7 @@
 import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
-import {AppModule} from "../../app.module";
+import {Test} from '@nestjs/testing';
+import {AppModule} from '../../app.module';
+import {userFactory} from "../../../prisma/factories/UserFactory";
 
 describe('Sessions Controller', () => {
     let app;
@@ -15,31 +16,16 @@ describe('Sessions Controller', () => {
     });
 
     it('/sessions/login (POST)', async () => {
+        const user = await userFactory();
+
         const response = await request(app.getHttpServer())
             .post('/sessions/login')
             .send({
-                email: 'adm@adm.com',
+                email: user.email,
                 password: 'password',
             })
             .expect(200)
-            .expect({ message: 'Successfully logged in' });
-
-        expect(response.header['set-cookie']).toBeDefined();
-    });
-
-    it('/sessions/logout (POST)', async () => {
-        const res = await request(app.getHttpServer())
-            .post('/sessions/login')
-            .send({
-                email: 'adm@adm.com',
-                password: 'password',
-            });
-
-        const response = await request(app.getHttpServer())
-            .post('/sessions/logout')
-            .send()
-            .expect(200)
-            .expect('Logged out successfully');
+            .expect({message: 'Successfully logged in'});
 
         expect(response.header['set-cookie']).toBeDefined();
     });

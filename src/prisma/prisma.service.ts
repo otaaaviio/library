@@ -1,4 +1,9 @@
-import { INestApplication, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  INestApplication,
+  Injectable,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
@@ -37,7 +42,7 @@ export class PrismaService
       await this.$connect();
     } catch (err) {
       Logger.error('Failed to connect to Prisma:', err);
-      throw new err;
+      throw new err();
     }
   }
 
