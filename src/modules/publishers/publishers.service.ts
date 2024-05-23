@@ -4,6 +4,7 @@ import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
 import {paginate, validateFilters} from '../utils/utils';
 import {CreateOrEditPublisher} from "./publishers.validation";
+import {Request} from "express";
 
 @Injectable()
 export class PublishersService {
@@ -132,7 +133,7 @@ export class PublishersService {
         return publisher_updated;
     }
 
-    async remove(id: number) {
+    async remove(id: number, user: Request['user']) {
         const publisher = await this.prisma.publisher.findUnique({
             where: {
                 id: id,

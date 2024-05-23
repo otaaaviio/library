@@ -63,7 +63,7 @@ export class PublishersController {
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: string, @Res() res, @Req req) {
+    async delete(@Param('id') id: string, @Res() res, @Req() req) {
         try {
             await this.publishersService.remove(Number(id), req.user);
             return res.status(200).send({message: `Publisher with ID ${id} deleted successfully`});
