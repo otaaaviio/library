@@ -9,7 +9,7 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {
     }
 
-    @Post()
+    @Post('/register')
     register(@Body() data: CreateUserDto) {
         try {
             return this.usersService.create(data);

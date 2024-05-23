@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import {PrismaService} from "../../prisma/prisma.service";
@@ -59,14 +59,19 @@ export class SessionsService {
 
         const payload = await this.authenticateUser(user, ip, user_agent);
 
-        return {token: this.jwtService.sign(payload)};
+        return this.jwtService.sign(payload);
     }
 
-    public async delete(token: TokenPayload) {
-        return this.prisma.session.update({
+    public async delete(user_id: number, token: string) {
+        const payload: TokenPayload = this.jwtService.verify(token);
+        if (payload.user_id !== user_id) {
+            throw new HttpException('Unauthorized', 401);
+        }
+
+        await this.prisma.session.updateMany({
             where: {
-                id: token.session_id,
-                user_id: token.user_id,
+                user_id: user_id,
+                active: true,
             },
             data: {
                 active: false,

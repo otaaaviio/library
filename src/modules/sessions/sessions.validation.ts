@@ -1,7 +1,15 @@
-import {IsEmail, Length} from "class-validator";
+import {IsEmail, IsNotEmpty, IsNumber, IsString, Length, Min} from "class-validator";
 
 interface TokenPayload {
     session_id: string;
+    user_id: number;
+}
+
+class TokenDto {
+    @IsNotEmpty()
+    session_id: string;
+
+    @Min(1)
     user_id: number;
 }
 
@@ -13,4 +21,4 @@ class SessionDto {
     password: string;
 }
 
-export {SessionDto, TokenPayload};
+export {SessionDto, TokenPayload, TokenDto};
