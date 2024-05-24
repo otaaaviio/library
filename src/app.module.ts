@@ -10,7 +10,6 @@ import {AuthMiddleware} from './middlewares/auth.middleware';
 import {JwtModule} from '@nestjs/jwt';
 import {PrismaModule} from './modules/prisma/prisma.module';
 import {AuthorsModule} from "./modules/authors/authors.module";
-import {VerifyOwnershipMiddleware} from "./middlewares/verifyOwnership.middleware";
 import {PublishersModule} from "./modules/publishers/publishers.module";
 
 @Module({
@@ -34,11 +33,5 @@ export class AppModule implements NestModule {
                 {path: 'users/register', method: RequestMethod.POST},
             )
             .forRoutes('*');
-
-        consumer.apply(VerifyOwnershipMiddleware)
-            .exclude(
-                {path: 'users/:id', method: RequestMethod.GET},
-            )
-            .forRoutes('authors/:id', 'users/:id');
     }
 }
