@@ -3,7 +3,7 @@ import {PrismaService} from '../prisma/prisma.service';
 import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
 import {paginate, validateFilters} from '../utils/utils';
-import {CreateOrEditPublisher} from "./publishers.validation";
+import {CreateOrEditPublisherDto} from "./publishers.validation";
 import {Request} from "express";
 
 @Injectable()
@@ -20,7 +20,7 @@ export class PublishersService {
         });
     };
 
-    async create(data: CreateOrEditPublisher, user_id: number) {
+    async create(data: CreateOrEditPublisherDto, user_id: number) {
         const publisher = this.prisma.publisher.create({
             data: {
                 name: data.name,
@@ -98,7 +98,7 @@ export class PublishersService {
         });
     }
 
-    async update(id: number, data: CreateOrEditPublisher, user: Request['user']) {
+    async update(id: number, data: CreateOrEditPublisherDto, user: Request['user']) {
         const publisher = await this.prisma.publisher.findUnique({
             where: {
                 id: id,

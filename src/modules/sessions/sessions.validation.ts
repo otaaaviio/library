@@ -5,14 +5,6 @@ interface TokenPayload {
   user_id: number;
 }
 
-class TokenDto {
-  @IsNotEmpty()
-  session_id: string;
-
-  @Min(1)
-  user_id: number;
-}
-
 class SessionDto {
   @IsEmail()
   email: string;
@@ -21,4 +13,4 @@ class SessionDto {
   password: string;
 }
 
-export { SessionDto, TokenPayload, TokenDto };
+export { SessionDto, TokenPayload };

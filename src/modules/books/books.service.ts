@@ -3,11 +3,11 @@ import {PrismaService} from '../prisma/prisma.service';
 import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
 import {paginate, validateFilters} from '../utils/utils';
-import {CreateOrEditAuthorDto} from "./authors.validation";
+import {CreateBookDto} from "./books.validation";
 import {Request} from "express";
 
 @Injectable()
-export class AuthorsService {
+export class BooksService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly redis: RedisService,
@@ -20,7 +20,7 @@ export class AuthorsService {
         });
     };
 
-    async create(data: CreateOrEditAuthorDto, user_id: number) {
+    async create(data: CreateBookDto, user_id: number) {
         const author = this.prisma.author.create({
             data: {
                 name: data.name,
@@ -98,7 +98,7 @@ export class AuthorsService {
         });
     }
 
-    async update(id: number, data: CreateOrEditAuthorDto, user: Request['user']) {
+    async update(id: number, data: CreateBookDto, user: Request['user']) {
         const author = await this.prisma.author.findUnique({
             where: {
                 id: id,

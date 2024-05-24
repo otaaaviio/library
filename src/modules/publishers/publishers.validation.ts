@@ -1,8 +1,8 @@
 import {IsNotEmpty} from "class-validator";
 
-class CreateOrEditPublisher {
+class CreateOrEditPublisherDto {
     @IsNotEmpty()
     name: string;
 }
 
-export {CreateOrEditPublisher};
+export {CreateOrEditPublisherDto};

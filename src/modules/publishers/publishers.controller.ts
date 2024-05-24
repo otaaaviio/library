@@ -9,7 +9,7 @@ import {
     Put, Res, Req,
 } from '@nestjs/common';
 import {PaginationQueryParams} from '../utils/validation';
-import {CreateOrEditPublisher} from "./publishers.validation";
+import {CreateOrEditPublisherDto} from "./publishers.validation";
 import {PublishersService} from "./publishers.service";
 
 @Controller('publishers')
@@ -20,7 +20,7 @@ export class PublishersController {
     }
 
     @Post()
-    async create(@Body() data: CreateOrEditPublisher, @Res() res, @Req() req) {
+    async create(@Body() data: CreateOrEditPublisherDto, @Res() res, @Req() req) {
         try {
             const publisher = await this.publishersService.create(data, Number(req.user.id));
             return res.status(201).send({message: 'Publisher created successfully', publisher: publisher});
@@ -53,7 +53,7 @@ export class PublishersController {
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() data: CreateOrEditPublisher, @Res() res, @Req() req) {
+    async update(@Param('id') id: string, @Body() data: CreateOrEditPublisherDto, @Res() res, @Req() req) {
         try {
             const publisher = await this.publishersService.update(Number(id), data, req.user);
             return res.status(200).send({message: 'Publisher updated successfully', publisher});
