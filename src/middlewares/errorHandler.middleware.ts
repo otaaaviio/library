@@ -35,12 +35,12 @@ export class ErrorHandlerMiddleware implements ExceptionFilter {
                     break;
             }
         } else if (exception instanceof HttpException) {
-            message = exception.getResponse()['message'];
+            message = exception.getResponse()['message'] ?? exception.message;
             statusCode = exception.getStatus();
         }
 
         response.status(statusCode).json({
-            statusCode: statusCode,
+            status: statusCode,
             message: message,
         });
 

@@ -44,7 +44,8 @@ export class PublishersController {
     async findOne(@Param('id') id: string, @Res() res) {
         try {
             const publisher = await this.publishersService.findOne(Number(id));
-            return publisher ?? res.status(404).send({message: 'Publisher not found'});
+            if (publisher) return res.status(200).json(publisher);
+            return res.status(404).send({message: 'Publisher not found'});
         } catch (err) {
             this.logger.error(`Failed to get publisher:\n ${err}`);
             throw err;

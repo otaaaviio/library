@@ -44,7 +44,8 @@ export class UsersController {
     async findOne(@Param('id') id: string, @Res() res) {
         try {
             const user = await this.usersService.findOne(Number(id));
-            return user ?? res.status(404).send({message: 'User not found'});
+            if (user) return res.status(200).json(user);
+            return res.status(404).send({message: 'User not found'});
         } catch (err) {
             this.logger.error(`Failed to get user:\n ${err}`);
             throw err;
