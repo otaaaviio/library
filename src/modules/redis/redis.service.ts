@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import Redis, { RedisOptions } from 'ioredis';
 
 @Injectable()
@@ -14,6 +14,5 @@ export class RedisService extends Redis implements OnModuleInit {
     });
   }
 
-  async onModuleInit() {
-  }
+  async onModuleInit() {}
 }

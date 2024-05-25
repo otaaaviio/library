@@ -1,8 +1,8 @@
-import {IsNotEmpty} from "class-validator";
+import { IsNotEmpty } from 'class-validator';
 
 class CreateOrEditAuthorDto {
-    @IsNotEmpty()
-    name: string;
+  @IsNotEmpty()
+  name: string;
 }
 
-export {CreateOrEditAuthorDto};
+export { CreateOrEditAuthorDto };

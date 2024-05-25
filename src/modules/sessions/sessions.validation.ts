@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, Length, Min } from 'class-validator';
+import { IsEmail, Length } from 'class-validator';
 
 interface TokenPayload {
   session_id: string;
