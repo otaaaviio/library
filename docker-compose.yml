@@ -4,6 +4,8 @@ services:
     image: node:20-alpine
     restart: always
     tty: true
+    ports:
+      - '${PORT}:${PORT}'
     depends_on:
       - db
       - redis

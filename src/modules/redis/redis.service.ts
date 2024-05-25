@@ -5,7 +5,7 @@ import Redis, { RedisOptions } from 'ioredis';
 export class RedisService extends Redis implements OnModuleInit {
   constructor() {
     super({
-      host: 'localhost',
+      host: 'library-redis',
       port: 6379,
     } as RedisOptions);
 
