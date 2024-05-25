@@ -1,80 +1,83 @@
 import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
+import {Test} from '@nestjs/testing';
+import {AppModule} from '../src/app.module';
 
-describe('Users Controller', () => {
-  let app;
+describe('User ', () => {
+    let app;
+    let token;
+    let res_login;
 
-  async function loginUser() {
-    return request(app.getHttpServer()).post('/sessions/login').send({
-      email: 'test@test.com',
-      password: 'password',
+    beforeAll(async () => {
+        const moduleFixture = await Test.createTestingModule({
+            imports: [AppModule],
+        }).compile();
+
+        app = moduleFixture.createNestApplication();
+        await app.init();
+
+        await request(app.getHttpServer())
+            .post('/users/register')
+            .send({
+                name: 'test',
+                email: 'test@test.com',
+                password: 'password',
+            });
+
+        res_login = await request(app.getHttpServer()).post('/sessions/login').send({
+            email: 'test@test.com',
+            password: 'password',
+        });
+
+        token = res_login.header['set-cookie'];
+        console.log('token', token);
     });
-  }
 
-  beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    it('Can register a new user', async () => {
+        await request(app.getHttpServer())
+            .post('/users/register')
+            .send({
+                name: 'test create',
+                email: 'testCreate@test.com',
+                password: 'password',
+            })
+            .expect(201);
+    });
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+    it('Can get a list of paginated users', async () => {
+        const res = await request(app.getHttpServer())
+            .get('/users')
+            .set('Cookie', token)
+            .send();
+        console.log('res', res);
+    });
 
-  it('/users/register (POST)', async () => {
-    await request(app.getHttpServer())
-      .post('/users/register')
-      .send({
-        name: 'Test',
-        email: 'test@test.com',
-        password: 'password',
-      })
-      .expect(201);
-  });
+    it('Can get a detailed user', async () => {
+        await request(app.getHttpServer())
+            .get(`/users/${res_login.body.id}`)
+            .set('Cookie', token)
+            .send()
+            .expect(200);
+    });
 
-  it('/users (GET)', async () => {
-    const resLogin = await loginUser();
+    it('Can update a user', async () => {
+        await request(app.getHttpServer())
+            .put(`/users/${res_login.body.id}`)
+            .set('Cookie', token)
+            .send({
+                name: 'Test updated',
+            })
+            .expect(200);
+    });
 
-    await request(app.getHttpServer())
-      .get('/users')
-      .set('Cookie', resLogin.headers['set-cookie'])
-      .send()
-      .expect(200);
-  });
+    it('Can delete a account', async () => {
+        await request(app.getHttpServer())
+            .delete(`/users/${res_login.body.id}`)
+            .set('Cookie', token)
+            .send()
+            .expect(200);
+    });
 
-  it('/users/:id (GET)', async () => {
-    const resLogin = await loginUser();
-
-    await request(app.getHttpServer())
-      .get(`/users/${resLogin.body.id}`)
-      .set('Cookie', resLogin.headers['set-cookie'])
-      .send()
-      .expect(200);
-  });
-
-  it('/users/:id (PUT)', async () => {
-    const resLogin = await loginUser();
-
-    await request(app.getHttpServer())
-      .put(`/users/${resLogin.body.id}`)
-      .set('Cookie', resLogin.headers['set-cookie'])
-      .send({
-        name: 'Test updated',
-      })
-      .expect(200);
-  });
-
-  it('/users/:id (DELETE)', async () => {
-    const resLogin = await loginUser();
-
-    await request(app.getHttpServer())
-      .delete(`/users/${resLogin.body.id}`)
-      .set('Cookie', resLogin.headers['set-cookie'])
-      .send()
-      .expect(200);
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
+    afterAll(async () => {
+        await app.close();
+    });
 });

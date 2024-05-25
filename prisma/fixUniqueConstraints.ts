@@ -1,4 +1,4 @@
-import {db_client} from "../src/utils";
+import {db_client} from "../src/pg.client";
 
 async function addConstraint() {
     await db_client.connect();
