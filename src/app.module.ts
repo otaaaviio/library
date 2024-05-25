@@ -11,6 +11,7 @@ import {JwtModule} from '@nestjs/jwt';
 import {PrismaModule} from './modules/prisma/prisma.module';
 import {AuthorsModule} from "./modules/authors/authors.module";
 import {PublishersModule} from "./modules/publishers/publishers.module";
+import {LoggerMiddleware} from "./middlewares/logger.middleware";
 
 @Module({
     imports: [
@@ -32,6 +33,10 @@ export class AppModule implements NestModule {
                 {path: 'sessions/login', method: RequestMethod.POST},
                 {path: 'users/register', method: RequestMethod.POST},
             )
+            .forRoutes('*');
+
+        consumer
+            .apply(LoggerMiddleware)
             .forRoutes('*');
     }
 }
