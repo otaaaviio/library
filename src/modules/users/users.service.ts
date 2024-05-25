@@ -6,6 +6,7 @@ import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
 import {paginate, validateFilters} from '../utils/utils';
 import {Request} from "express";
+import {CreateOrEditUserSelect, FindOneUserSelect} from "./users.select";
 
 @Injectable()
 export class UsersService {
@@ -29,11 +30,7 @@ export class UsersService {
                 name: data.name,
                 password: hashed_pass,
             },
-            select: {
-                id: true,
-                email: true,
-                name: true,
-            },
+            select: CreateOrEditUserSelect,
         });
 
         await this.redis.del('users:*');
@@ -85,35 +82,7 @@ export class UsersService {
                 id: id,
                 deleted_at: null,
             },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                CreatedAuthors: {
-                    select: {
-                        id: true,
-                        name: true,
-                    },
-                },
-                CreatedBooks: {
-                    select: {
-                        id: true,
-                        title: true,
-                    },
-                },
-                CreatedReviews: {
-                    select: {
-                        id: true,
-                        comment: true,
-                    },
-                },
-                CreatedPublishers: {
-                    select: {
-                        id: true,
-                        name: true,
-                    },
-                },
-            },
+            select: FindOneUserSelect,
         });
     }
 
@@ -126,11 +95,7 @@ export class UsersService {
                 deleted_at: null,
             },
             data: data,
-            select: {
-                id: true,
-                name: true,
-                email: true,
-            },
+            select: CreateOrEditUserSelect,
         });
 
         await this.redis.del('users:*');

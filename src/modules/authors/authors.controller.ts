@@ -9,7 +9,7 @@ import {
     Put, Res, Req,
 } from '@nestjs/common';
 import {PaginationQueryParams} from '../utils/validation';
-import {CreateOrEditAuthor} from "./authors.validation";
+import {CreateOrEditAuthorDto} from "./authors.validation";
 import {AuthorsService} from "./authors.service";
 
 @Controller('authors')
@@ -20,7 +20,7 @@ export class AuthorsController {
     }
 
     @Post()
-    async create(@Body() data: CreateOrEditAuthor, @Res() res, @Req() req) {
+    async create(@Body() data: CreateOrEditAuthorDto, @Res() res, @Req() req) {
         try {
             const author = await this.authorsService.create(data, Number(req.user.id));
             return res.status(201).send({message: 'Author created successfully', author: author});
@@ -53,7 +53,7 @@ export class AuthorsController {
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() data: CreateOrEditAuthor, @Res() res, @Req() req) {
+    async update(@Param('id') id: string, @Body() data: CreateOrEditAuthorDto, @Res() res, @Req() req) {
         try {
             const author = await this.authorsService.update(Number(id), data, req.user);
             return res.status(200).send({message: 'Author updated successfully', author});

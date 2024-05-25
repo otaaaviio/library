@@ -5,6 +5,7 @@ import {PaginationQueryParams} from '../utils/validation';
 import {paginate, validateFilters} from '../utils/utils';
 import {CreateBookDto} from "./books.validation";
 import {Request} from "express";
+import {CreateOrEditBookSelect, FindAllBookSelect, FindOneBookSelect} from "./books.select";
 
 @Injectable()
 export class BooksService {
@@ -14,37 +15,52 @@ export class BooksService {
     ) {
     }
 
-    private countAuthors = async (whereClause: any): Promise<number> => {
-        return this.prisma.author.count({
+    private countBooks = async (whereClause: any): Promise<number> => {
+        return this.prisma.book.count({
             where: whereClause,
         });
     };
 
     async create(data: CreateBookDto, user_id: number) {
-        const author = this.prisma.author.create({
+        const book = this.prisma.book.create({
             data: {
-                name: data.name,
+                title: data.title,
+                image_url: data.image_url,
+                description: data.description,
+                published_at: data.published_at,
+                Publisher: {
+                    connect: {
+                        id: data.publisher_id,
+                    },
+                },
+                Author: {
+                    connect: {
+                        id: data.author_id,
+                    },
+                },
+                Category: {
+                    connect: {
+                        id: data.category_id,
+                    },
+                },
                 CreatedBy: {
                     connect: {
                         id: user_id,
                     },
                 }
             },
-            select: {
-                id: true,
-                name: true,
-            },
+            select: CreateOrEditBookSelect
         });
 
-        this.redis.del('authors:*');
+        this.redis.del('books:*');
 
-        return author;
+        return book;
     }
 
     async findAll(p: PaginationQueryParams) {
-        validateFilters(p.filter, ['name']);
+        validateFilters(p.filter, ['title', 'author_id', 'category_id', 'publisher_id', 'published_at']);
 
-        const redis_key = `authors:page:${p.page}:where:${p.filter}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+        const redis_key = `books:page:${p.page}:where:${p.filter}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
 
         const cached_data = await this.redis.get(redis_key);
 
@@ -60,13 +76,10 @@ export class BooksService {
             };
         }
 
-        const total_data = await this.countAuthors(whereClause);
+        const total_data = await this.countBooks(whereClause);
 
-        const data = await this.prisma.author.findMany({
-            select: {
-                id: true,
-                name: true,
-            },
+        const data = await this.prisma.book.findMany({
+            select: FindAllBookSelect,
             where: whereClause,
             take: p.items_per_page,
             skip: p.items_per_page * (p.page - 1),
@@ -80,71 +93,73 @@ export class BooksService {
     }
 
     async findOne(id: number) {
-        return this.prisma.author.findUnique({
+        return this.prisma.book.findUnique({
             where: {
                 id: id,
                 deleted_at: null,
             },
-            select: {
-                id: true,
-                name: true,
-                Books: {
-                    select: {
-                        id: true,
-                        title: true,
-                    },
-                }
-            },
+            select: FindOneBookSelect,
         });
     }
 
     async update(id: number, data: CreateBookDto, user: Request['user']) {
-        const author = await this.prisma.author.findUnique({
+        const book = await this.prisma.book.findUnique({
             where: {
                 id: id,
                 deleted_at: null,
             },
         });
 
-        if (!author) throw new HttpException('Author not found', 404);
-        if (author.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to update this author', 403);
+        if (!book) throw new HttpException('Book not found', 404);
+        if (book.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to update this book', 403);
 
-        const author_updated = this.prisma.author.update({
-            where: {
-                id: id,
-                deleted_at: null,
-            },
-            data: {
-                ...data,
-                UpdatedBy: {
-                    connect: {
-                        id: user.id,
-                    },
+        let updateData: any = Object.keys(data).reduce((obj, key) => {
+            if (data[key]) {
+                if (['publisher_id', 'author_id', 'category_id'].includes(key)) {
+                    obj[key.charAt(0).toUpperCase() + key.slice(1)] = {
+                        connect: {
+                            id: data[key],
+                        },
+                    };
+                } else {
+                    obj[key] = data[key];
                 }
+            }
+            return obj;
+        }, {});
+
+        updateData.UpdatedBy = {
+            connect: {
+                id: user.id,
             },
-            select: {
-                id: true,
-                name: true,
+        };
+
+        const book_updated = await this.prisma.book.update({
+            where: {
+                id: id,
+                deleted_at: null,
             },
+            data: updateData,
+            select: CreateOrEditBookSelect
         });
 
-        this.redis.del('authors:*');
+        this.redis.del('books:*');
 
-        return author_updated;
+        return book_updated;
     }
 
     async remove(id: number, user: Request['user']) {
-        const author = await this.prisma.author.findUnique({
+        const book = await this.prisma.book.findUnique({
             where: {
                 id: id,
                 deleted_at: null,
             },
         });
 
-        if (!author) throw new HttpException('Author not found', 404);
-        if (author.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to delete this author', 403);
+        if (!book) throw new HttpException('Book not found', 404);
+        if (book.created_by !== user.id && !user.is_admin) throw new HttpException('You are not allowed to delete this book', 403);
 
-        const author_deleted = this.prisma.author.update({
+        const book_deleted = this.prisma.book.update({
             where: {
                 id: id,
                 deleted_at: null,
@@ -157,8 +172,8 @@ export class BooksService {
             },
         });
 
-        this.redis.del('authors:*');
+        this.redis.del('books:*');
 
-        return author_deleted;
+        return book_deleted;
     }
 }

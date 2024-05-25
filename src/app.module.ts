@@ -12,6 +12,7 @@ import {PrismaModule} from './modules/prisma/prisma.module';
 import {AuthorsModule} from "./modules/authors/authors.module";
 import {PublishersModule} from "./modules/publishers/publishers.module";
 import {LoggerMiddleware} from "./middlewares/logger.middleware";
+import {BooksModule} from "./modules/books/books.module";
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import {LoggerMiddleware} from "./middlewares/logger.middleware";
         }),
         PrismaModule,
         AuthorsModule,
+        BooksModule,
         PublishersModule,
         UsersModule,
         SessionsModule,
