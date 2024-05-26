@@ -1,73 +1,105 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Library Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The Library Management System is a comprehensive platform designed to facilitate the efficient management of library
+resources.
+It provides a seamless interface for users to register books, provide ratings, and share their thoughts.
 
-## Description
+## Key Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### User Registration and Authentication
 
-## Installation
+Our system ensures secure access to its features by implementing a robust user registration and authentication process.
+Users can create their own accounts, which are required to access some system's functionalities.
 
-```bash
-$ npm install
+### CRUD Operations
+
+The system allows users to perform CRUD operations on books, publishers, reviews, authors.
+
+### Endpoints
+
+- /books
+- /publishers
+- /reviews
+- /authors
+- /users
+- /sessions
+
+#### All endpoints, except /sessions, support the following HTTP methods:
+
+```GET /``` Get all
+
+```GET /:id``` Get by id
+
+```POST /``` Create
+
+```PUT /:id``` Update by id
+
+```DELETE /:id``` Delete by id
+
+## Getting Started
+
+### Prerequisites
+
+This project requires the following dependencies:
+
+- [Docker compose](https://docs.docker.com/compose/install/)
+
+### Installation
+
+1. Clone the repo
+
+```sh
+git clone https://github.com/otaaaviio/library.git
 ```
 
-## Running the app
+2. Run the following command to build the project
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```sh
+docker compose build
 ```
 
-## Test
+3. Run the following command to start the project
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```sh
+docker compose up
 ```
 
-## Support
+## Development
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Running the tests
 
-## Stay in touch
+To run the tests, run the following command
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```sh
+docker exec -it library-node npm run test
+```
 
-## License
+## Built With
 
-Nest is [MIT licensed](LICENSE).
+* [NestJS](https://nestjs.com) - The web framework used
+* [Prisma](https://www.prisma.io) - ORM
+* [PostgreSQL](https://www.postgresql.org) - Database
+* [Docker](https://www.docker.com) - Containerization
+* [Jest](https://jestjs.io) - Testing framework
+
+## Contributing
+
+Fork the project and create a pull request.
+
+## Conclusion
+
+This project is built using modern technologies such as NestJS, Prisma, PostgreSQL, and Docker, demonstrating the
+ability to work with cutting-edge tools and frameworks. The use of Docker for containerization also shows an
+understanding of deployment and scalability issues.
+
+The project's focus on testing with Jest indicates a commitment to quality and reliability.
+
+Overall, this Library Management System serves as a portfolio piece that showcases a wide range of skills and a
+deep understanding of software development principles with NestJS. It stands as a testament to the ability to design,
+implement, and manage a full-featured, secure, and efficient system.
+
+## Author
+
+* **Otávio Gonçalves** - [linkedin](https://www.linkedin.com/in/otaaaviio/)
