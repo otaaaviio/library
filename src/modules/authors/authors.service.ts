@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { PaginationQueryParams } from '../utils/validation';
@@ -105,9 +105,13 @@ export class AuthorsService {
       },
     });
 
-    if (!author) throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
+    if (!author)
+      throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
     if (author.created_by !== user.id && !user.is_admin)
-      throw new HttpException('You are not allowed to update this author', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'You are not allowed to update this author',
+        HttpStatus.UNAUTHORIZED,
+      );
 
     const author_updated = this.prisma.author.update({
       where: {
@@ -141,9 +145,13 @@ export class AuthorsService {
       },
     });
 
-    if (!author) throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
+    if (!author)
+      throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
     if (author.created_by !== user.id && !user.is_admin)
-      throw new HttpException('You are not allowed to delete this author', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'You are not allowed to delete this author',
+        HttpStatus.UNAUTHORIZED,
+      );
 
     const author_deleted = this.prisma.author.update({
       where: {

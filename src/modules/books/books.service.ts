@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { PaginationQueryParams } from '../utils/validation';
@@ -121,7 +121,10 @@ export class BooksService {
 
     if (!book) throw new HttpException('Book not found', HttpStatus.NOT_FOUND);
     if (book.created_by !== user.id && !user.is_admin)
-      throw new HttpException('You are not allowed to update this book', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'You are not allowed to update this book',
+        HttpStatus.UNAUTHORIZED,
+      );
 
     const updateData: any = Object.keys(data).reduce((obj, key) => {
       if (data[key]) {
@@ -168,7 +171,10 @@ export class BooksService {
 
     if (!book) throw new HttpException('Book not found', HttpStatus.NOT_FOUND);
     if (book.created_by !== user.id && !user.is_admin)
-      throw new HttpException('You are not allowed to delete this book', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'You are not allowed to delete this book',
+        HttpStatus.UNAUTHORIZED,
+      );
 
     const book_deleted = this.prisma.book.update({
       where: {

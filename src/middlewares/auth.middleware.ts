@@ -31,7 +31,9 @@ export class AuthMiddleware implements NestMiddleware {
     const token = req.cookies['token'];
 
     if (!token) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Unauthorized' });
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: 'Unauthorized' });
     }
 
     try {

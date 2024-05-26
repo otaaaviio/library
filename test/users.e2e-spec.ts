@@ -1,8 +1,9 @@
 import * as request from 'supertest';
 import {Test} from '@nestjs/testing';
 import {AppModule} from '../src/app.module';
+import {HttpStatus} from "@nestjs/common";
 
-describe('User ', () => {
+describe('User Routes', () => {
     let app;
     let token;
     let res_login;
@@ -19,7 +20,7 @@ describe('User ', () => {
             .post('/users/register')
             .send({
                 name: 'test',
-                email: 'test@test.com',
+                email: 'testusers@test.com',
                 password: 'password',
             });
 
@@ -29,7 +30,6 @@ describe('User ', () => {
         });
 
         token = res_login.header['set-cookie'];
-        console.log('token', token);
     });
 
     it('Can register a new user', async () => {
@@ -40,15 +40,18 @@ describe('User ', () => {
                 email: 'testCreate@test.com',
                 password: 'password',
             })
-            .expect(201);
+            .expect(HttpStatus.CREATED);
     });
 
     it('Can get a list of paginated users', async () => {
-        const res = await request(app.getHttpServer())
+        await request(app.getHttpServer())
             .get('/users')
             .set('Cookie', token)
-            .send();
-        console.log('res', res);
+            .send({
+                page: 1,
+                items_per_page: 10
+            })
+            .expect(HttpStatus.OK);
     });
 
     it('Can get a detailed user', async () => {
@@ -56,7 +59,7 @@ describe('User ', () => {
             .get(`/users/${res_login.body.id}`)
             .set('Cookie', token)
             .send()
-            .expect(200);
+            .expect(HttpStatus.OK);
     });
 
     it('Can update a user', async () => {
@@ -66,7 +69,7 @@ describe('User ', () => {
             .send({
                 name: 'Test updated',
             })
-            .expect(200);
+            .expect(HttpStatus.OK);
     });
 
     it('Can delete a account', async () => {
@@ -74,7 +77,7 @@ describe('User ', () => {
             .delete(`/users/${res_login.body.id}`)
             .set('Cookie', token)
             .send()
-            .expect(200);
+            .expect(HttpStatus.OK);
     });
 
     afterAll(async () => {

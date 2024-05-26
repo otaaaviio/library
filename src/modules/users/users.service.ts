@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './user.validation';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -112,7 +112,10 @@ export class UsersService {
 
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     if (id !== auth_user.id && !auth_user.is_admin)
-      throw new HttpException('You are not allowed to delete this user', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'You are not allowed to delete this user',
+        HttpStatus.UNAUTHORIZED,
+      );
 
     await this.prisma.user.update({
       where: {

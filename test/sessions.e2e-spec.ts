@@ -1,36 +1,43 @@
 import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { userFactory } from '../prisma/factories/UserFactory';
+import {Test} from '@nestjs/testing';
+import {AppModule} from '../src/app.module';
+import {userFactory} from '../prisma/factories/UserFactory';
+import {HttpStatus} from "@nestjs/common";
 
-describe('Sessions Controller', () => {
-  let app;
+describe('Session Routes', () => {
+    let app;
 
-  beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    beforeAll(async () => {
+        const moduleFixture = await Test.createTestingModule({
+            imports: [AppModule],
+        }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+        app = moduleFixture.createNestApplication();
+        await app.init();
+    });
 
-  it('/sessions/login (POST)', async () => {
-    const user = await userFactory();
+    it('Can login a user and logout', async () => {
+        const user = await userFactory();
 
-    const response = await request(app.getHttpServer())
-      .post('/sessions/login')
-      .send({
-        email: user.email,
-        password: 'password',
-      })
-      .expect(200)
-      .expect({ message: 'Successfully logged in' });
+        const response = await request(app.getHttpServer())
+            .post('/sessions/login')
+            .send({
+                email: user.email,
+                password: 'password', // default password set in the factory
+            })
+            .expect(HttpStatus.OK);
 
-    expect(response.header['set-cookie']).toBeDefined();
-  });
+        const token = response.header['set-cookie'];
 
-  afterAll(async () => {
-    await app.close();
-  });
+        expect(token).toBeDefined();
+
+        await request(app.getHttpServer())
+            .post('/sessions/logout')
+            .set('Cookie', token)
+            .expect(HttpStatus.OK);
+    });
+
+    afterAll(async () => {
+        await app.close();
+    });
 });

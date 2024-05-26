@@ -8,7 +8,8 @@ import {
   Logger,
   Put,
   Res,
-  Req, HttpStatus,
+  Req,
+  HttpStatus,
 } from '@nestjs/common';
 import { PaginationQueryParams } from '../utils/validation';
 import { CreateOrEditAuthorDto } from './authors.validation';
@@ -51,7 +52,9 @@ export class AuthorsController {
     try {
       const author = await this.authorsService.findOne(Number(id));
       if (author) return res.status(200).json(author);
-      return res.status(HttpStatus.NOT_FOUND).send({ message: 'Author not found' });
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .send({ message: 'Author not found' });
     } catch (err) {
       this.logger.error(`Failed to get author:\n ${err}`);
       throw err;

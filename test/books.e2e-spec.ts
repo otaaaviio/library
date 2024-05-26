@@ -3,7 +3,7 @@ import {Test} from '@nestjs/testing';
 import {AppModule} from '../src/app.module';
 import {HttpStatus} from "@nestjs/common";
 
-describe('Publisher Routes', () => {
+describe('Author Routes', () => {
     let app;
     let token;
     let res_login;
@@ -20,7 +20,7 @@ describe('Publisher Routes', () => {
             .post('/users/register')
             .send({
                 name: 'test',
-                email: 'testpublisher@test.com',
+                email: 'testbook@test.com',
                 password: 'password',
             });
 
@@ -32,16 +32,16 @@ describe('Publisher Routes', () => {
         token = res_login.header['set-cookie'];
     });
 
-    it('Can register a new publisher', async () => {
+    it('Can register a new book', async () => {
         await request(app.getHttpServer())
-            .post('/publishers/register')
+            .post('/books/register')
             .send({
                 name: 'test create',
             })
             .expect(HttpStatus.CREATED);
     });
 
-    it('Can get a list of paginated publisher', async () => {
+    it('Can get a list of paginated book', async () => {
         await request(app.getHttpServer())
             .get('/users')
             .set('Cookie', token)
@@ -52,17 +52,17 @@ describe('Publisher Routes', () => {
             .expect(HttpStatus.OK);
     });
 
-    it('Can get a detailed publisher', async () => {
+    it('Can get a detailed book', async () => {
         await request(app.getHttpServer())
-            .get(`/publishers/${res_login.body.id}`)
+            .get(`/books/${res_login.body.id}`)
             .set('Cookie', token)
             .send()
             .expect(HttpStatus.OK);
     });
 
-    it('Can update a publisher', async () => {
+    it('Can update a book', async () => {
         await request(app.getHttpServer())
-            .put(`/publishers/${res_login.body.id}`)
+            .put(`/books/${res_login.body.id}`)
             .set('Cookie', token)
             .send({
                 name: 'Test updated',
@@ -70,9 +70,9 @@ describe('Publisher Routes', () => {
             .expect(HttpStatus.OK);
     });
 
-    it('Can delete a publisher', async () => {
+    it('Can delete a book', async () => {
         await request(app.getHttpServer())
-            .delete(`/publishers/${res_login.body.id}`)
+            .delete(`/books/${res_login.body.id}`)
             .set('Cookie', token)
             .send()
             .expect(HttpStatus.OK);

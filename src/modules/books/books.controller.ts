@@ -8,7 +8,8 @@ import {
   Logger,
   Put,
   Res,
-  Req, HttpStatus,
+  Req,
+  HttpStatus,
 } from '@nestjs/common';
 import { PaginationQueryParams } from '../utils/validation';
 import { CreateBookDto, EditBookDto } from './books.validation';
@@ -48,7 +49,9 @@ export class BooksController {
     try {
       const book = await this.booksService.findOne(Number(id));
       if (book) return res.status(200).json(book);
-      return res.status(HttpStatus.NOT_FOUND).send({ message: 'Book not found' });
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .send({ message: 'Book not found' });
     } catch (err) {
       this.logger.error(`Failed to get book:\n ${err}`);
       throw err;
