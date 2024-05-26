@@ -38,12 +38,13 @@ describe('Author Routes', () => {
             .send({
                 name: 'test create',
             })
+            .set('Cookie', token)
             .expect(HttpStatus.CREATED);
     });
 
     it('Can get a list of paginated author', async () => {
         await request(app.getHttpServer())
-            .get('/users')
+            .get('/authors')
             .set('Cookie', token)
             .send({
                 page: 1,

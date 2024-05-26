@@ -38,12 +38,13 @@ describe('Publisher Routes', () => {
             .send({
                 name: 'test create',
             })
+            .set('Cookie', token)
             .expect(HttpStatus.CREATED);
     });
 
     it('Can get a list of paginated publisher', async () => {
         await request(app.getHttpServer())
-            .get('/users')
+            .get('/publishers')
             .set('Cookie', token)
             .send({
                 page: 1,

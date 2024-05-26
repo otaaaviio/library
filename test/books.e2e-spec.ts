@@ -2,6 +2,8 @@ import * as request from 'supertest';
 import {Test} from '@nestjs/testing';
 import {AppModule} from '../src/app.module';
 import {HttpStatus} from "@nestjs/common";
+import {publisherFactory} from "../prisma/factories/PublisherFactory";
+import {authorFactory} from "../prisma/factories/AuthorFactory";
 
 describe('Author Routes', () => {
     let app;
@@ -33,17 +35,27 @@ describe('Author Routes', () => {
     });
 
     it('Can register a new book', async () => {
+        const publisher = await publisherFactory();
+        const author = await authorFactory();
+
         await request(app.getHttpServer())
             .post('/books/register')
             .send({
-                name: 'test create',
+                title: 'Test Book',
+                publisher_id: publisher.id,
+                author_id: author.id,
+                category_id: 1,
+                image_url: 'http://example.com/test-book.jpg',
+                description: 'This is a test book.',
+                published_at: new Date(),
             })
+            .set('Cookie', token)
             .expect(HttpStatus.CREATED);
     });
 
     it('Can get a list of paginated book', async () => {
         await request(app.getHttpServer())
-            .get('/users')
+            .get('/books')
             .set('Cookie', token)
             .send({
                 page: 1,
@@ -65,7 +77,7 @@ describe('Author Routes', () => {
             .put(`/books/${res_login.body.id}`)
             .set('Cookie', token)
             .send({
-                name: 'Test updated',
+                title: 'Test updated',
             })
             .expect(HttpStatus.OK);
     });
