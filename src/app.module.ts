@@ -36,6 +36,16 @@ export class AppModule implements NestModule {
       .exclude(
         { path: 'sessions/login', method: RequestMethod.POST },
         { path: 'users/register', method: RequestMethod.POST },
+          { path: 'publishers', method: RequestMethod.GET },
+          { path: 'publishers/:id', method: RequestMethod.GET },
+          { path: 'books', method: RequestMethod.GET },
+          { path: 'books/:id', method: RequestMethod.GET },
+          { path: 'authors', method: RequestMethod.GET },
+          { path: 'authors/:id', method: RequestMethod.GET },
+          { path: 'users', method: RequestMethod.GET },
+          { path: 'users/:id', method: RequestMethod.GET },
+          { path: 'reviews', method: RequestMethod.GET },
+          { path: 'reviews/:id', method: RequestMethod.GET },
       )
       .forRoutes('*');
 
