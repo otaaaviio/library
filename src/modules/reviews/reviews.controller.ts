@@ -8,7 +8,7 @@ import {
   Logger,
   Put,
   Res,
-  Req,
+  Req, HttpStatus,
 } from '@nestjs/common';
 import { PaginationQueryParams } from '../utils/validation';
 import { CreateReviewDto, EditReviewDto } from './reviews.validation';
@@ -51,7 +51,7 @@ export class ReviewsController {
     try {
       const review = await this.reviewsService.findOne(Number(id));
       if (review) return res.status(200).json(review);
-      return res.status(404).send({ message: 'Review not found' });
+      return res.status(HttpStatus.NOT_FOUND).send({ message: 'Review not found' });
     } catch (err) {
       this.logger.error(`Failed to get review:\n ${err}`);
       throw err;

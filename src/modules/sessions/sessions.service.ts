@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -62,12 +62,12 @@ export class SessionsService {
   }
 
   public async delete(user_id: number, token: string) {
-    if (!token) throw new HttpException('Token not valid', 401);
+    if (!token) throw new HttpException('Token not valid', HttpStatus.UNAUTHORIZED);
 
     const payload: TokenPayload = this.jwtService.verify(token);
 
     if (payload.user_id !== user_id) {
-      throw new HttpException('Unauthorized', 401);
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
     await this.prisma.session.updateMany({

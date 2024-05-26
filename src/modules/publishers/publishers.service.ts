@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { PaginationQueryParams } from '../utils/validation';
@@ -109,11 +109,11 @@ export class PublishersService {
       },
     });
 
-    if (!publisher) throw new HttpException('Publisher not found', 404);
+    if (!publisher) throw new HttpException('Publisher not found', HttpStatus.NOT_FOUND);
     if (publisher.created_by !== user.id && !user.is_admin)
       throw new HttpException(
         'You are not allowed to update this publisher',
-        403,
+        HttpStatus.UNAUTHORIZED,
       );
 
     const publisher_updated = this.prisma.publisher.update({
@@ -148,11 +148,11 @@ export class PublishersService {
       },
     });
 
-    if (!publisher) throw new HttpException('Publisher not found', 404);
+    if (!publisher) throw new HttpException('Publisher not found', HttpStatus.NOT_FOUND);
     if (publisher.created_by !== user.id && !user.is_admin)
       throw new HttpException(
         'You are not allowed to delete this publisher',
-        403,
+          HttpStatus.UNAUTHORIZED,
       );
 
     const publisher_deleted = this.prisma.publisher.update({

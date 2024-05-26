@@ -1,4 +1,5 @@
 import {
+  HttpStatus,
   Injectable,
   NestMiddleware,
   UnauthorizedException,
@@ -30,7 +31,7 @@ export class AuthMiddleware implements NestMiddleware {
     const token = req.cookies['token'];
 
     if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Unauthorized' });
     }
 
     try {

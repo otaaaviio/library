@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { PaginationQueryParams } from '../utils/validation';
@@ -106,9 +106,9 @@ export class ReviewsService {
       },
     });
 
-    if (!review) throw new HttpException('Review not found', 404);
+    if (!review) throw new HttpException('Review not found', HttpStatus.NOT_FOUND);
     if (review.created_by !== user.id && !user.is_admin)
-      throw new HttpException('You are not allowed to update this review', 403);
+      throw new HttpException('You are not allowed to update this review', HttpStatus.UNAUTHORIZED);
 
     const review_updated = await this.prisma.review.update({
       where: {
@@ -139,9 +139,9 @@ export class ReviewsService {
       },
     });
 
-    if (!review) throw new HttpException('Review not found', 404);
+    if (!review) throw new HttpException('Review not found', HttpStatus.NOT_FOUND);
     if (review.created_by !== user.id && !user.is_admin)
-      throw new HttpException('You are not allowed to delete this review', 403);
+      throw new HttpException('You are not allowed to delete this review', HttpStatus.UNAUTHORIZED);
 
     const review_deleted = this.prisma.review.update({
       where: {

@@ -8,7 +8,7 @@ import {
   Logger,
   Put,
   Res,
-  Req,
+  Req, HttpStatus,
 } from '@nestjs/common';
 import { PaginationQueryParams } from '../utils/validation';
 import { CreateOrEditPublisherDto } from './publishers.validation';
@@ -52,7 +52,7 @@ export class PublishersController {
     try {
       const publisher = await this.publishersService.findOne(Number(id));
       if (publisher) return res.status(200).json(publisher);
-      return res.status(404).send({ message: 'Publisher not found' });
+      return res.status(HttpStatus.NOT_FOUND).send({ message: 'Publisher not found' });
     } catch (err) {
       this.logger.error(`Failed to get publisher:\n ${err}`);
       throw err;

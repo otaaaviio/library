@@ -8,7 +8,7 @@ import {
   Logger,
   Put,
   Res,
-  Req,
+  Req, HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './user.validation';
@@ -48,7 +48,7 @@ export class UsersController {
     try {
       const user = await this.usersService.findOne(Number(id));
       if (user) return res.status(200).json(user);
-      return res.status(404).send({ message: 'User not found' });
+      return res.status(HttpStatus.NOT_FOUND).send({ message: 'User not found' });
     } catch (err) {
       this.logger.error(`Failed to get user:\n ${err}`);
       throw err;

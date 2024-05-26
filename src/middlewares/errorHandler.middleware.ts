@@ -2,7 +2,7 @@ import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
-  HttpException,
+  HttpException, HttpStatus,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
@@ -14,25 +14,25 @@ export class ErrorHandlerMiddleware implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     let message = 'An error occurred';
-    let statusCode = 500;
+    let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       switch (exception.code) {
         case 'P2025':
           message = 'Record not found';
-          statusCode = 404;
+          statusCode = HttpStatus.NOT_FOUND;
           break;
         case 'P2003':
           message = 'Record already exists';
-          statusCode = 400;
+          statusCode = HttpStatus.BAD_REQUEST;
           break;
         case 'P2002':
           message = `Unique constraint failed on the fields: ${(exception.meta.target as string[]).join(', ')}`;
-          statusCode = 400;
+          statusCode = HttpStatus.BAD_REQUEST;
           break;
         case 'P2010':
           message = 'Related record not found';
-          statusCode = 404;
+          statusCode = HttpStatus.NOT_FOUND;
           break;
         default:
           break;
