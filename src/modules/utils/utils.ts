@@ -1,5 +1,10 @@
 import { PaginationQueryParams } from './validation';
 
+interface IFilter {
+  field: string;
+  value: string;
+}
+
 function paginate(data: any, count_total: number, p: PaginationQueryParams) {
   const total_pages = Math.ceil(count_total / p.items_per_page) || 1;
 
@@ -14,19 +19,33 @@ function paginate(data: any, count_total: number, p: PaginationQueryParams) {
   };
 }
 
-function validateFilters(filters: any, allowedFilters: string[]): void {
+function validateFilters(filters: IFilter[], allowedFilters: string[]): void {
   if (!filters) return;
 
   Object.keys(filters).forEach((key) => {
     if (!allowedFilters.includes(key)) {
       throw new Error(`Invalid filter: ${key}`);
     }
-
-    filters[key] = {
-      contains: filters[key],
-      mode: 'insensitive',
-    };
   });
+  return;
 }
 
-export { paginate, validateFilters };
+function getWhereClause(filters?: IFilter[]) {
+  const whereClause = {
+    deleted_at: null,
+  };
+
+  if (!Array.isArray(filters)) return whereClause;
+
+  for (const filter of filters) {
+    if (filter) {
+      whereClause[filter.field] = {
+        contains: filter.value,
+      };
+    }
+  }
+
+  return whereClause;
+}
+
+export { paginate, validateFilters, getWhereClause };

@@ -17,11 +17,18 @@ export class SessionsService {
         email: email,
         deleted_at: null,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        is_admin: true,
+      }
     });
-    if (!user) throw new Error('User not found');
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     const passwordMatched = await bcrypt.compare(password, user.password);
-    if (!passwordMatched) throw new Error('Invalid password');
+    if (!passwordMatched) throw new HttpException('Invalid password', HttpStatus.UNAUTHORIZED);
 
     return user;
   }
@@ -58,7 +65,16 @@ export class SessionsService {
 
     const payload = await this.authenticateUser(user, ip, user_agent);
 
-    return this.jwtService.sign(payload);
+    const token = await this.jwtService.sign(payload);
+
+    const userPayload = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        is_admin: user.is_admin,
+    }
+
+    return {token, user: userPayload};
   }
 
   public async delete(user_id: number, token: string) {

@@ -7,9 +7,11 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
+import { Logger } from '@nestjs/common';
 
 @Catch(Error)
 export class ErrorHandlerMiddleware implements ExceptionFilter {
+  private readonly logger = new Logger(ErrorHandlerMiddleware.name);
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -39,8 +41,11 @@ export class ErrorHandlerMiddleware implements ExceptionFilter {
           break;
       }
     } else if (exception instanceof HttpException) {
+      this.logger.error(exception)
       message = exception.getResponse()['message'] ?? exception.message;
       statusCode = exception.getStatus();
+    } else {
+      this.logger.error(exception)
     }
 
     response.status(statusCode).json({

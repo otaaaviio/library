@@ -13,6 +13,11 @@ async function bootstrap() {
   app.useGlobalFilters(new ErrorHandlerMiddleware());
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
+
   await app.listen(PORT, () => {
     console.log(`Server is running on http://${HOST}:${PORT}`);
   });

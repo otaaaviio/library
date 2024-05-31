@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { PaginationQueryParams } from '../utils/validation';
-import { paginate, validateFilters } from '../utils/utils';
+import {getWhereClause, paginate, validateFilters} from '../utils/utils';
 import { CreateOrEditAuthorDto } from './authors.validation';
 import { Request } from 'express';
 
@@ -41,23 +41,15 @@ export class AuthorsService {
   }
 
   async findAll(p: PaginationQueryParams) {
-    validateFilters(p.filter, ['name']);
+    validateFilters(p.filters, ['name']);
 
-    const redis_key = `authors:page:${p.page}:where:${p.filter}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+    const redis_key = `authors:page:${p.page}:where:${p.filters}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
 
     const cached_data = await this.redis.get(redis_key);
 
     if (cached_data) return JSON.parse(cached_data);
 
-    const whereClause = {
-      deleted_at: null,
-    };
-
-    if (p.filter) {
-      whereClause[p.filter.field] = {
-        contains: p.filter.value,
-      };
-    }
+    const whereClause = getWhereClause(p.filters);
 
     const total_data = await this.countAuthors(whereClause);
 

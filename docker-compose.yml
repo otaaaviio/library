@@ -15,9 +15,6 @@ services:
     working_dir: '/usr/app'
     command: >
       sh -c "npm install &&
-      npx prisma generate &&
-      npm run migrate &&
-      npm run seeder category &&
       npm run start:dev -- --preserveWatchOutput"
     environment:
       - DB_HOST=${DB_HOST}
@@ -34,6 +31,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_DATABASE_NAME}
     ports:
       - '${DB_PORT}:${DB_PORT}'
     volumes:

@@ -16,14 +16,13 @@ class CreateBookDto {
 
   @IsOptional()
   @IsNotEmpty()
-  image_url: string;
-
-  @IsOptional()
-  @IsNotEmpty()
   description: string;
 
   @IsDate()
   published_at: Date;
+
+  @IsNotEmpty()
+  images: string[];
 }
 
 class EditBookDto extends CreateBookDto {
@@ -41,6 +40,9 @@ class EditBookDto extends CreateBookDto {
 
   @IsOptional()
   published_at: Date;
+
+  @IsOptional()
+  images: string[];
 }
 
 export { CreateBookDto, EditBookDto };

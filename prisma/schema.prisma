@@ -54,7 +54,6 @@ model Book {
   publisher_id Int
   author_id    Int
   category_id  Int
-  image_url    String?
   description  String?
   published_at DateTime
 
@@ -64,14 +63,29 @@ model Book {
   created_by Int?
   updated_by Int?
 
-  Publisher Publisher @relation(fields: [publisher_id], references: [id])
-  Author    Author    @relation(fields: [author_id], references: [id])
-  Category  Category  @relation(fields: [category_id], references: [id])
-  CreatedBy User?     @relation("BookCreatedBy", fields: [created_by], references: [id])
-  UpdatedBy User?     @relation("BookUpdatedBy", fields: [updated_by], references: [id])
+  Publisher Publisher   @relation(fields: [publisher_id], references: [id])
+  Author    Author      @relation(fields: [author_id], references: [id])
+  Category  Category    @relation(fields: [category_id], references: [id])
+  CreatedBy User?       @relation("BookCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User?       @relation("BookUpdatedBy", fields: [updated_by], references: [id])
   Reviews   Review[]
+  Images    BookImage[]
 
   @@map("books")
+}
+
+model BookImage {
+  id         Int    @id @default(autoincrement())
+  book_id    Int
+  image_path String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  Book Book @relation(fields: [book_id], references: [id])
+
+  @@map("book_images")
 }
 
 model Review {

@@ -25,15 +25,13 @@ export class SessionsController {
     @Res() res,
   ) {
     try {
-      const token = await this.sessionsService.create(data, ip, user_agent);
+      const {token, user} = await this.sessionsService.create(data, ip, user_agent);
       res.cookie('token', token, {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: true,
+        secure: false,
         httpOnly: true,
       });
-      return res.status(200).json({ message: 'Successfully logged in' });
+      return res.status(200).json({ message: 'Successfully logged in' , user});
     } catch (err) {
       this.logger.error(`Failed to login:\n ${err}`);
       throw err;

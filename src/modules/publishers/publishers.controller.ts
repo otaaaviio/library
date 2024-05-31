@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Body,
+    Query,
   Param,
   Delete,
   Logger,
@@ -14,6 +15,7 @@ import {
 import { PaginationQueryParams } from '../utils/validation';
 import { CreateOrEditPublisherDto } from './publishers.validation';
 import { PublishersService } from './publishers.service';
+import { plainToClass } from 'class-transformer';
 
 @Controller('publishers')
 export class PublishersController {
@@ -39,7 +41,8 @@ export class PublishersController {
   }
 
   @Get()
-  async findAll(@Body() params: PaginationQueryParams) {
+  async findAll(@Query() params: any) {
+    params = plainToClass(PaginationQueryParams, params);
     try {
       return this.publishersService.findAll(params);
     } catch (err) {

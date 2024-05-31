@@ -9,12 +9,13 @@ import {
   Put,
   Res,
   Req,
+    Query,
   HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './user.validation';
 import { PaginationQueryParams } from '../utils/validation';
-
+import { plainToClass } from 'class-transformer';
 @Controller('users')
 export class UsersController {
   private logger = new Logger(UsersController.name);
@@ -35,7 +36,8 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(@Body() params: PaginationQueryParams) {
+  async findAll(@Query() params: any) {
+    params = plainToClass(PaginationQueryParams, params);
     try {
       return this.usersService.findAll(params);
     } catch (err) {
