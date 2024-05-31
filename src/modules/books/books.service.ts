@@ -82,7 +82,7 @@ export class BooksService {
             'published_at',
         ]);
 
-        const redis_key = `books:page:${p.page}:where:${p.filters}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+        const redis_key = `books:page:${p.page}:where:${JSON.stringify(p.filters)}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
 
         const cached_data = await this.redis.get(redis_key);
 

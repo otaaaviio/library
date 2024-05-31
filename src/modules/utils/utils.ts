@@ -22,11 +22,12 @@ function paginate(data: any, count_total: number, p: PaginationQueryParams) {
 function validateFilters(filters: IFilter[], allowedFilters: string[]): void {
   if (!filters) return;
 
-  Object.keys(filters).forEach((key) => {
-    if (!allowedFilters.includes(key)) {
-      throw new Error(`Invalid filter: ${key}`);
+  filters.map(key => {
+    if(!allowedFilters.includes(key.field)) {
+        throw new Error(`Invalid filter: ${key.field}`);
     }
-  });
+  })
+
   return;
 }
 

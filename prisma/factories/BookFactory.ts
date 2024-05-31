@@ -34,7 +34,9 @@ export async function bookFactory() {
             }
         },
     });
-    await reviewFactory(book.id);
+
+    for(let i = 0; i < Math.floor(Math.random() * 30); i++)
+        await reviewFactory(book.id);
 
     return book;
 }
