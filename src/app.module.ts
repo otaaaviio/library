@@ -14,6 +14,7 @@ import { PublishersModule } from './modules/publishers/publishers.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { BooksModule } from './modules/books/books.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import {UserBooksModule} from "./modules/userBooks/userBooks.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
       secret: process.env.JWT_SECRET,
     }),
     PrismaModule,
+    UserBooksModule,
     AuthorsModule,
     BooksModule,
     ReviewsModule,

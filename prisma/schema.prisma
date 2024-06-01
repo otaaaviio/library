@@ -29,6 +29,7 @@ model User {
   UpdatedAuthors    Author[]    @relation("AuthorUpdatedBy")
   CreatedPublishers Publisher[] @relation("PublisherCreatedBy")
   UpdatedPublishers Publisher[] @relation("PublisherUpdatedBy")
+  UserBook          UserBook[]
 
   @@map("users")
 }
@@ -70,6 +71,7 @@ model Book {
   UpdatedBy User?       @relation("BookUpdatedBy", fields: [updated_by], references: [id])
   Reviews   Review[]
   Images    BookImage[]
+  UserBook  UserBook[]
 
   @@map("books")
 }
@@ -150,6 +152,18 @@ model Category {
 
   @@index([name, name_normalized], name: "idx_category_name_normalized")
   @@map("categories")
+}
+
+model UserBook {
+  book_id Int
+  user_id Int
+  is_read Boolean @default(false)
+
+  User User @relation(fields: [user_id], references: [id])
+  Book Book @relation(fields: [book_id], references: [id])
+
+  @@id([user_id, book_id])
+  @@map("user_books")
 }
 
 enum CATEGORY {
