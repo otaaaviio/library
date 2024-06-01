@@ -21,6 +21,8 @@ export async function bookFactory() {
         })
         .build();
 
+    const random_cover = Math.floor(Math.random() * 3);
+
     const book = await prisma.book.create({
         data: {
             ...data,
@@ -29,7 +31,7 @@ export async function bookFactory() {
             Category: {connect: {id: CategoryEnumHelper.getRandomId()}},
             Images: {
                 create: {
-                    image_path: '/src/assets/images/default_book.jpg'
+                    image_path: `/src/assets/images/default_book_${random_cover}.jpg`
                 }
             }
         },
