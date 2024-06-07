@@ -44,7 +44,7 @@ export class PublishersService {
     async findAll(p: PaginationQueryParams) {
         validateFilters(p.filters, ['name']);
 
-        const redis_key = `publishers:page:${p.page}:where:${p.filters}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+        const redis_key = `publishers:page:${p.page}:where:${JSON.stringify(p.filters)}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
 
         const cached_data = await this.redis.get(redis_key);
 

@@ -135,7 +135,7 @@ export class BooksService {
     }
 
     async findOne(id: number) {
-        const book = this.prisma.book.findUnique({
+        const book = await this.prisma.book.findUnique({
             where: {
                 id: id,
                 deleted_at: null,
@@ -145,7 +145,28 @@ export class BooksService {
 
         if (!book) throw new HttpException('Book not found', HttpStatus.NOT_FOUND);
 
-        return book;
+        const reviewInfo = await this.prisma.review.aggregate({
+            where: {book_id: book.id},
+            _count: true,
+            _avg: {
+                rating: true,
+            },
+        });
+
+        return {
+            id: book.id,
+            title: book.title,
+            publisher: book.Publisher.name,
+            author: book.Author.name,
+            category: book.Category.name,
+            description: book.description,
+            published_at: book.published_at,
+            createdBy: book.CreatedBy,
+            images: book.Images,
+            reviews: book.Reviews,
+            review_count: reviewInfo._count,
+            avg_rating: reviewInfo._avg.rating,
+        }
     }
 
     async update(id: number, data: CreateBookDto, user: Request['user']) {
