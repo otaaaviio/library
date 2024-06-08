@@ -48,7 +48,7 @@ export class ReviewsService {
       select: CreateOrEditReviewSelect,
     });
 
-    this.redis.del('reviews:*');
+    await this.redis.del('reviews:*');
 
     return review;
   }
@@ -56,7 +56,7 @@ export class ReviewsService {
   async findAll(p: PaginationQueryParams) {
     validateFilters(p.filters, ['rating', 'created_by', 'book_id']);
 
-    const redis_key = `reviews:page:${p.page}:where:${p.filters}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+    const redis_key = `reviews:page:${p.page}:where:${JSON.stringify(p.filters)}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
 
     const cached_data = await this.redis.get(redis_key);
 
@@ -122,7 +122,7 @@ export class ReviewsService {
       select: CreateOrEditReviewSelect,
     });
 
-    this.redis.del('reviews:*');
+    await this.redis.del('reviews:*');
 
     return review_updated;
   }
@@ -156,7 +156,7 @@ export class ReviewsService {
       },
     });
 
-    this.redis.del('reviews:*');
+    await this.redis.del('reviews:*');
 
     return review_deleted;
   }

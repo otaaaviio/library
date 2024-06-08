@@ -31,7 +31,7 @@ export class UserBooksService {
             },
         });
 
-        this.redis.del('userBooks:*');
+        await this.redis.del('userBooks:*');
 
         return user_book;
     }
@@ -98,7 +98,7 @@ export class UserBooksService {
             },
         });
 
-        this.redis.del('userBooks:*');
+        await this.redis.del('userBooks:*');
 
         return user_book;
     }
@@ -113,7 +113,7 @@ export class UserBooksService {
             }
         });
 
-        this.redis.del('userBooks:*');
+        await this.redis.del('userBooks:*');
 
         return user_book;
     }

@@ -36,7 +36,7 @@ export class PublishersService {
             },
         });
 
-        this.redis.del('publishers:*');
+        await this.redis.del('publishers:*');
 
         return publisher;
     }
@@ -129,7 +129,7 @@ export class PublishersService {
             },
         });
 
-        this.redis.del('publishers:*');
+        await this.redis.del('publishers:*');
 
         return publisher_updated;
     }
@@ -163,7 +163,7 @@ export class PublishersService {
             },
         });
 
-        this.redis.del('publishers:*');
+        await this.redis.del('publishers:*');
 
         return publisher_deleted;
     }

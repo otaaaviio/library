@@ -68,7 +68,7 @@ export class BooksService {
             select: CreateOrEditBookSelect,
         });
 
-        this.redis.del('books:*');
+        await this.redis.del('books:*');
 
         return book;
     }
@@ -204,7 +204,7 @@ export class BooksService {
             select: CreateOrEditBookSelect,
         });
 
-        this.redis.del('books:*');
+        await this.redis.del('books:*');
 
         return book_updated;
     }
@@ -227,7 +227,7 @@ export class BooksService {
             },
         });
 
-        this.redis.del('books:*');
+        await this.redis.del('books:*');
 
         return book_deleted;
     }

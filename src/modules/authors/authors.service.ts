@@ -35,7 +35,7 @@ export class AuthorsService {
       },
     });
 
-    this.redis.del('authors:*');
+    await this.redis.del('authors:*');
 
     return author;
   }
@@ -124,7 +124,7 @@ export class AuthorsService {
       },
     });
 
-    this.redis.del('authors:*');
+    await this.redis.del('authors:*');
 
     return author_updated;
   }
@@ -158,7 +158,7 @@ export class AuthorsService {
       },
     });
 
-    this.redis.del('authors:*');
+    await this.redis.del('authors:*');
 
     return author_deleted;
   }

@@ -24,6 +24,7 @@ export const FindAllReviewSelect = {
     },
   },
   rating: true,
+  comment: true,
   CreatedBy: {
     select: {
       id: true,
