@@ -7,6 +7,7 @@ import {
   Delete,
   Logger,
   Put,
+  Query,
   Res,
   Req,
   HttpStatus,
@@ -14,6 +15,7 @@ import {
 import { PaginationQueryParams } from '../utils/validation';
 import { CreateReviewDto, EditReviewDto } from './reviews.validation';
 import { ReviewsService } from './reviews.service';
+import { plainToClass } from 'class-transformer';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -38,7 +40,8 @@ export class ReviewsController {
   }
 
   @Get()
-  async findAll(@Body() params: PaginationQueryParams) {
+  async findAll(@Query() params: PaginationQueryParams) {
+    params = plainToClass(PaginationQueryParams, params);
     try {
       return this.reviewsService.findAll(params);
     } catch (err) {
