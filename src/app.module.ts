@@ -15,21 +15,23 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { BooksModule } from './modules/books/books.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import {UserBooksModule} from "./modules/userBooks/userBooks.module";
+import {CloudinaryModule} from "./modules/cloudinary/cloudinary.module";
 
 @Module({
-  imports: [
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-    }),
-    PrismaModule,
-    UserBooksModule,
-    AuthorsModule,
-    BooksModule,
-    ReviewsModule,
-    PublishersModule,
-    UsersModule,
-    SessionsModule,
-  ],
+    imports: [
+        JwtModule.register({
+            secret: process.env.JWT_SECRET,
+        }),
+        PrismaModule,
+        UserBooksModule,
+        CloudinaryModule,
+        AuthorsModule,
+        BooksModule,
+        ReviewsModule,
+        PublishersModule,
+        UsersModule,
+        SessionsModule,
+    ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
