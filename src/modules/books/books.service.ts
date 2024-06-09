@@ -93,7 +93,7 @@ export class BooksService {
 
         const cached_data = await this.redis.get(redis_key);
 
-        if (cached_data) return JSON.parse(cached_data);
+        // if (cached_data) return JSON.parse(cached_data);
 
         const whereClause = getWhereClause(p.filters);
 
@@ -111,7 +111,7 @@ export class BooksService {
             acc.push({
                 id: item.id,
                 title: item.title,
-                image_path: item.Images[0].image_path,
+                image_path: item.Images[0]?.image_path,
                 author: item.Author.name,
                 category: item.Category.name
             });
@@ -169,16 +169,39 @@ export class BooksService {
 
     async update(id: number, data: CreateBookDto, user: Request['user']) {
         const book = await this.findOne(id);
+        let imageUrls: string[] = [];
 
         this.verifyBookOwnership(book, user);
+
+        if(!!data.images)
+            await this.prisma.bookImage.deleteMany({
+                where: {
+                    Book: {
+                        id: id,
+                    },
+                },
+            });
+
+        if (!!data.images)
+            imageUrls = await Promise.all(data.images.map(async (image, index) => {
+                const public_id = `${data.title.replace(/[^a-zA-Z0-9]/g, '')}_${index}`;
+                return await this.cloudinary.uploadImage(image, public_id);
+            }));
 
         const updateData: any = Object.keys(data).reduce((obj, key) => {
             if (data[key]) {
                 if (['publisher_id', 'author_id', 'category_id'].includes(key)) {
-                    obj[key.charAt(0).toUpperCase() + key.slice(1)] = {
+                    const newKey = key.replace('_id', '');
+                    obj[newKey.charAt(0).toUpperCase() + newKey.slice(1)] = {
                         connect: {
                             id: data[key],
                         },
+                    };
+                } else if (key === 'images' && data[key]) {
+                    obj[key.charAt(0).toUpperCase() + key.slice(1)] = {
+                        create: imageUrls.map(url => ({
+                            image_path: url
+                        }))
                     };
                 } else {
                     obj[key] = data[key];
