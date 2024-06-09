@@ -41,10 +41,9 @@ export class PublishersController {
   }
 
   @Get()
-  async findAll(@Query() params: any) {
-    params = plainToClass(PaginationQueryParams, params);
+  async findAll() {
     try {
-      return this.publishersService.findAll(params);
+      return this.publishersService.findAll();
     } catch (err) {
       this.logger.error(`Failed to get publishers:\n ${err}`);
       throw err;

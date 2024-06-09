@@ -13,12 +13,6 @@ export class AuthorsService {
     private readonly redis: RedisService,
   ) {}
 
-  private countAuthors = async (whereClause: any): Promise<number> => {
-    return this.prisma.author.count({
-      where: whereClause,
-    });
-  };
-
   async create(data: CreateOrEditAuthorDto, user_id: number) {
     const author = this.prisma.author.create({
       data: {
@@ -35,39 +29,31 @@ export class AuthorsService {
       },
     });
 
-    await this.redis.del('authors:*');
+    await this.redis.del('authors');
 
     return author;
   }
 
-  async findAll(p: PaginationQueryParams) {
-    validateFilters(p.filters, ['name']);
-
-    const redis_key = `authors:page:${p.page}:where:${JSON.stringify(p.filters)}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+  async findAll() {
+    const redis_key = 'authors';
 
     const cached_data = await this.redis.get(redis_key);
 
     if (cached_data) return JSON.parse(cached_data);
-
-    const whereClause = getWhereClause(p.filters);
-
-    const total_data = await this.countAuthors(whereClause);
 
     const data = await this.prisma.author.findMany({
       select: {
         id: true,
         name: true,
       },
-      where: whereClause,
-      take: p.items_per_page,
-      skip: p.items_per_page * (p.page - 1),
+      where: {
+        deleted_at: null,
+      }
     });
 
-    const paginated_data = paginate(data, total_data, p);
+    this.redis.set(redis_key, JSON.stringify(data));
 
-    this.redis.set(redis_key, JSON.stringify(paginated_data));
-
-    return paginated_data;
+    return data;
   }
 
   async findOne(id: number) {
@@ -124,7 +110,7 @@ export class AuthorsService {
       },
     });
 
-    await this.redis.del('authors:*');
+    await this.redis.del('authors');
 
     return author_updated;
   }
@@ -158,7 +144,7 @@ export class AuthorsService {
       },
     });
 
-    await this.redis.del('authors:*');
+    await this.redis.del('authors');
 
     return author_deleted;
   }

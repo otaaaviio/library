@@ -1,8 +1,6 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {PrismaService} from '../prisma/prisma.service';
 import {RedisService} from '../redis/redis.service';
-import {PaginationQueryParams} from '../utils/validation';
-import {getWhereClause, paginate, validateFilters} from '../utils/utils';
 import {CreateOrEditPublisherDto} from './publishers.validation';
 import {Request} from 'express';
 
@@ -13,12 +11,6 @@ export class PublishersService {
         private readonly redis: RedisService,
     ) {
     }
-
-    private countPublishers = async (whereClause: any): Promise<number> => {
-        return this.prisma.publisher.count({
-            where: whereClause,
-        });
-    };
 
     async create(data: CreateOrEditPublisherDto, user_id: number) {
         const publisher = this.prisma.publisher.create({
@@ -36,39 +28,31 @@ export class PublishersService {
             },
         });
 
-        await this.redis.del('publishers:*');
+        await this.redis.del('publishers');
 
         return publisher;
     }
 
-    async findAll(p: PaginationQueryParams) {
-        validateFilters(p.filters, ['name']);
-
-        const redis_key = `publishers:page:${p.page}:where:${JSON.stringify(p.filters)}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+    async findAll() {
+        const redis_key = 'publishers';
 
         const cached_data = await this.redis.get(redis_key);
 
         if (cached_data) return JSON.parse(cached_data);
-
-        const whereClause = getWhereClause(p.filters);
-
-        const total_data = await this.countPublishers(whereClause);
 
         const data = await this.prisma.publisher.findMany({
             select: {
                 id: true,
                 name: true,
             },
-            where: whereClause,
-            take: p.items_per_page,
-            skip: p.items_per_page * (p.page - 1),
+            where: {
+                deleted_at: null,
+            }
         });
 
-        const paginated_data = paginate(data, total_data, p);
+        this.redis.set(redis_key, JSON.stringify(data));
 
-        this.redis.set(redis_key, JSON.stringify(paginated_data));
-
-        return paginated_data;
+        return data;
     }
 
     async findOne(id: number) {
@@ -129,7 +113,7 @@ export class PublishersService {
             },
         });
 
-        await this.redis.del('publishers:*');
+        await this.redis.del('publishers');
 
         return publisher_updated;
     }
@@ -163,7 +147,7 @@ export class PublishersService {
             },
         });
 
-        await this.redis.del('publishers:*');
+        await this.redis.del('publishers');
 
         return publisher_deleted;
     }

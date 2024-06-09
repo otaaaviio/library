@@ -40,10 +40,9 @@ export class AuthorsController {
   }
 
   @Get()
-  async findAll(@Query() params: any) {
-    params = plainToClass(PaginationQueryParams, params);
+  async findAll() {
     try {
-      return this.authorsService.findAll(params);
+      return this.authorsService.findAll();
     } catch (err) {
       this.logger.error(`Failed to get authors:\n ${err}`);
       throw err;
