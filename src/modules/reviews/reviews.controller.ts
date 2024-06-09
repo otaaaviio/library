@@ -24,7 +24,8 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  async create(@Body() data: CreateReviewDto, @Res() res, @Req() req) {
+  async create(@Body() data: any, @Res() res, @Req() req) {
+    data = plainToClass(CreateReviewDto, data);
     try {
       const review = await this.reviewsService.create(
         data,

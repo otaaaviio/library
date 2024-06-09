@@ -35,7 +35,7 @@ export class UserBooksController {
                     response = await this.userBooksService.create(body.book_id, req.user.id);
                     break;
                 case 'update':
-                    response = await this.userBooksService.update(body.book_id, req.user.id);
+                    response = await this.userBooksService.update(body.book_id, req.user.id, body.is_read);
                     break;
                 case 'delete':
                     response = await this.userBooksService.remove(body.book_id, req.user.id);

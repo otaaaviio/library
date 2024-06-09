@@ -3,7 +3,6 @@ import {PrismaService} from '../prisma/prisma.service';
 import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
 import { paginate, validateFilters} from '../utils/utils';
-import {Request} from 'express';
 
 @Injectable()
 export class UserBooksService {
@@ -43,7 +42,7 @@ export class UserBooksService {
 
         const cached_data = await this.redis.get(redis_key);
 
-        if (cached_data) return JSON.parse(cached_data);
+        // if (cached_data) return JSON.parse(cached_data);
 
         const whereClause = {
             user_id: user_id
@@ -85,7 +84,7 @@ export class UserBooksService {
         return paginated_data;
     }
 
-    async update(book_id: number, user_id: number) {
+    async update(book_id: number, user_id: number, is_read: boolean) {
         const user_book = await this.prisma.userBook.update({
             where: {
                 user_id_book_id: {
@@ -94,7 +93,7 @@ export class UserBooksService {
                 }
             },
             data: {
-                is_read: true,
+                is_read: is_read,
             },
         });
 
