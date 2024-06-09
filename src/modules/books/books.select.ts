@@ -3,16 +3,19 @@ const baseSelect = {
     title: true,
     Publisher: {
         select: {
+            id: true,
             name: true,
         },
     },
     Author: {
         select: {
+            id: true,
             name: true,
         },
     },
     Category: {
         select: {
+            id: true,
             name: true,
         },
     },

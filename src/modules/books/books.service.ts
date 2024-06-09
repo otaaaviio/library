@@ -154,16 +154,7 @@ export class BooksService {
         });
 
         return {
-            id: book.id,
-            title: book.title,
-            publisher: book.Publisher.name,
-            author: book.Author.name,
-            category: book.Category.name,
-            description: book.description,
-            published_at: book.published_at,
-            createdBy: book.CreatedBy,
-            images: book.Images,
-            reviews: book.Reviews,
+            ...book,
             review_count: reviewInfo._count,
             avg_rating: reviewInfo._avg.rating,
         }
