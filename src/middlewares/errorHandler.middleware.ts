@@ -15,7 +15,7 @@ export class ErrorHandlerMiddleware implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-
+console.log(exception)
     let message = 'An error occurred';
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 

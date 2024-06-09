@@ -18,7 +18,6 @@ class CreateBookDto {
   @IsNotEmpty()
   description: string;
 
-  @IsDate()
   published_at: Date;
 
   @IsNotEmpty()

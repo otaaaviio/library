@@ -1,11 +1,10 @@
-import {Injectable, Logger, OnModuleInit} from '@nestjs/common';
+import {Injectable, OnModuleInit} from '@nestjs/common';
 import {v2 as cloudinary} from 'cloudinary';
 import { config } from 'dotenv';
 config();
 
 @Injectable()
 export class CloudinaryService implements OnModuleInit {
-    private readonly logger = new Logger(CloudinaryService.name);
 
     onModuleInit() {
         cloudinary.config({
@@ -18,8 +17,8 @@ export class CloudinaryService implements OnModuleInit {
     async uploadImage(imageBase64: string, public_id: string): Promise<string> {
         await cloudinary.uploader.upload(imageBase64, {
             public_id: public_id
-        }).catch((error) => {
-            this.logger.error(error);
+        }).catch((err) => {
+            throw err;
         });
 
         return cloudinary.url(public_id, {

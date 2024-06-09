@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { ErrorHandlerMiddleware } from './middlewares/errorHandler.middleware';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const PORT = Number(process.env.PORT) || 3000;
@@ -12,6 +13,8 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalFilters(new ErrorHandlerMiddleware());
   app.useGlobalPipes(new ValidationPipe());
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
   app.enableCors({
     origin: true,

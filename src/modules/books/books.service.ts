@@ -5,6 +5,7 @@ import {PaginationQueryParams} from '../utils/validation';
 import {getWhereClause, paginate, validateFilters} from '../utils/utils';
 import {CreateBookDto} from './books.validation';
 import {Request} from 'express';
+import {CloudinaryService} from "../cloudinary/cloudinary.service";
 import {
     CreateOrEditBookSelect,
     FindAllBookSelect,
@@ -16,6 +17,7 @@ export class BooksService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly redis: RedisService,
+        private readonly cloudinary: CloudinaryService,
     ) {
     }
 
@@ -34,6 +36,10 @@ export class BooksService {
     }
 
     async create(data: CreateBookDto, user_id: number) {
+        const imageUrls = await Promise.all(data.images.map(async (image, index) => {
+            const public_id = `${data.title.replace(/[^a-zA-Z0-9]/g, '')}_${index}`;
+            return await this.cloudinary.uploadImage(image, public_id);
+        }));
 
         const book = this.prisma.book.create({
             data: {
@@ -61,8 +67,8 @@ export class BooksService {
                     },
                 },
                 Images: {
-                    create: data.images.map(image => ({
-                        image_path: image
+                    create: imageUrls.map(url => ({
+                        image_path: url
                     }))
                 }
             },
