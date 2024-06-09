@@ -51,10 +51,9 @@ export class UserBooksController {
     }
 
     @Get()
-    async getListOfBooks(@Query() params: PaginationQueryParams, @Res() res, @Req() req) {
-        params = plainToClass(PaginationQueryParams, params);
+    async getListOfBooks(@Res() res, @Req() req) {
         try {
-            const response = await this.userBooksService.findAll(params, req.user.id);
+            const response = await this.userBooksService.findAll(req.user.id);
             return res.status(200).json(response);
         } catch (err) {
             this.logger.error(`Failed to get response:\n ${err}`);
