@@ -1,3 +1,6 @@
+echo "copying .env file..."
+cp .env.example .env
+
 echo "Docker compose build..."
 docker compose build --no-cache
 
