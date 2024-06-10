@@ -31,7 +31,7 @@ export async function bookFactory() {
             Category: {connect: {id: CategoryEnumHelper.getRandomId()}},
             Images: {
                 create: {
-                    image_path: `/src/assets/images/default_book_${random_cover}.jpg`
+                    image_path: `https://res.cloudinary.com/dw51fcqfj/image/upload/v1717977829/default_${random_cover}.avif`
                 }
             }
         },

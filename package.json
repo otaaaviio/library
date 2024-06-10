@@ -10,6 +10,7 @@
     "seeder": "ts-node commands/runSeeder.ts",
     "build": "nest build",
     "migrate": "prisma migrate dev --name initial_migration && ts-node prisma/fixUniqueConstraints.ts",
+    "flushTables": "ts-node prisma/flushAllTables.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

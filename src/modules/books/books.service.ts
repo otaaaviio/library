@@ -93,7 +93,7 @@ export class BooksService {
 
         const cached_data = await this.redis.get(redis_key);
 
-        // if (cached_data) return JSON.parse(cached_data);
+        if (cached_data) return JSON.parse(cached_data);
 
         const whereClause = getWhereClause(p.filters);
 
