@@ -1,7 +1,7 @@
 import {Factory} from "rosie";
-import casual from "casual";
-import bcrypt from "bcrypt"
-import { PrismaService } from '../../src/prisma/prisma.service';
+import * as casual from "casual";
+import * as bcrypt from "bcrypt"
+import { PrismaService } from '../../src/modules/prisma/prisma.service';
 
 const prisma = new PrismaService();
 
@@ -10,7 +10,7 @@ export async function userFactory() {
         .attrs({
             'name': () => casual.full_name,
             'email': () => casual.email,
-            'password': () => bcrypt.hashSync(casual.password, 10),
+            'password': () => bcrypt.hashSync('password', 10),
             'is_admin': () => casual.boolean
         })
         .build();

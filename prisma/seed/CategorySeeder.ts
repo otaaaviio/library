@@ -1,5 +1,5 @@
 import { CategoryEnumHelper } from '../../src/enums/CategoryEnum';
-import { PrismaService } from '../../src/prisma/prisma.service';
+import { PrismaService } from '../../src/modules/prisma/prisma.service';
 
 const prisma = new PrismaService();
 
@@ -10,12 +10,12 @@ export async function categorySeeder() {
       continue;
     }
 
-    await prisma.category.create({
+    const res = await prisma.category.create({
       data: {
         name: CategoryEnumHelper.getLabel(value),
         name_normalized: value
       },
     });
-    console.log(`[INFO]: Category ${value} created`);
+    console.log(`[INFO]: Category ${value} created with id:`, res.id);
   }
 }

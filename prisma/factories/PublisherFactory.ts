@@ -1,12 +1,12 @@
 import {Factory} from "rosie";
-import casual from "casual";
-import { PrismaService } from '../../src/prisma/prisma.service';
+import * as casual from "casual";
+import { PrismaService } from '../../src/modules/prisma/prisma.service';
 
 const prisma = new PrismaService();
 
 export async function publisherFactory() {
     const data = Factory.define('publisher')
-        .attr('name', () => casual.name)
+        .attr('name', () => casual.full_name)
         .build();
 
     return prisma.publisher.create({

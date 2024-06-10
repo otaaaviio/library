@@ -9,11 +9,11 @@ datasource db {
 }
 
 model User {
-  id              Int     @id @default(autoincrement())
-  email           String
-  name            String
-  is_admin        Boolean @default(false)
-  hashed_password String
+  id       Int     @id @default(autoincrement())
+  email    String
+  name     String
+  is_admin Boolean @default(false)
+  password String
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -29,8 +29,8 @@ model User {
   UpdatedAuthors    Author[]    @relation("AuthorUpdatedBy")
   CreatedPublishers Publisher[] @relation("PublisherCreatedBy")
   UpdatedPublishers Publisher[] @relation("PublisherUpdatedBy")
+  UserBook          UserBook[]
 
-  @@index([name, deleted_at], name: "idx_user_name_deleted_at")
   @@map("users")
 }
 
@@ -55,25 +55,39 @@ model Book {
   publisher_id Int
   author_id    Int
   category_id  Int
-  image_url    String?
   description  String?
   published_at DateTime
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
-  created_by Int
-  updated_by Int
+  created_by Int?
+  updated_by Int?
 
-  Publisher Publisher @relation(fields: [publisher_id], references: [id])
-  Author    Author    @relation(fields: [author_id], references: [id])
-  Category  Category  @relation(fields: [category_id], references: [id])
-  CreatedBy User      @relation("BookCreatedBy", fields: [created_by], references: [id])
-  UpdatedBy User      @relation("BookUpdatedBy", fields: [updated_by], references: [id])
+  Publisher Publisher   @relation(fields: [publisher_id], references: [id])
+  Author    Author      @relation(fields: [author_id], references: [id])
+  Category  Category    @relation(fields: [category_id], references: [id])
+  CreatedBy User?       @relation("BookCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User?       @relation("BookUpdatedBy", fields: [updated_by], references: [id])
   Reviews   Review[]
+  Images    BookImage[]
+  UserBook  UserBook[]
 
-  @@index([title, deleted_at], name: "idx_book_name_deleted_at")
   @@map("books")
+}
+
+model BookImage {
+  id         Int    @id @default(autoincrement())
+  book_id    Int
+  image_path String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  Book Book @relation(fields: [book_id], references: [id])
+
+  @@map("book_images")
 }
 
 model Review {
@@ -102,14 +116,13 @@ model Author {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
-  created_by Int
-  updated_by Int
+  created_by Int?
+  updated_by Int?
 
   Books     Book[]
-  CreatedBy User   @relation("AuthorCreatedBy", fields: [created_by], references: [id])
-  UpdatedBy User   @relation("AuthorUpdatedBy", fields: [updated_by], references: [id])
+  CreatedBy User?  @relation("AuthorCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User?  @relation("AuthorUpdatedBy", fields: [updated_by], references: [id])
 
-  @@index([name, deleted_at], name: "idx_author_name_deleted_at")
   @@map("authors")
 }
 
@@ -120,14 +133,13 @@ model Publisher {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
-  created_by Int
-  updated_by Int
+  created_by Int?
+  updated_by Int?
 
   Books     Book[]
-  CreatedBy User   @relation("PublisherCreatedBy", fields: [created_by], references: [id])
-  UpdatedBy User   @relation("PublisherUpdatedBy", fields: [updated_by], references: [id])
+  CreatedBy User?  @relation("PublisherCreatedBy", fields: [created_by], references: [id])
+  UpdatedBy User?  @relation("PublisherUpdatedBy", fields: [updated_by], references: [id])
 
-  @@index([name, deleted_at], name: "idx_publisher_name_deleted_at")
   @@map("publishers")
 }
 
@@ -140,6 +152,18 @@ model Category {
 
   @@index([name, name_normalized], name: "idx_category_name_normalized")
   @@map("categories")
+}
+
+model UserBook {
+  book_id Int
+  user_id Int
+  is_read Boolean @default(false)
+
+  User User @relation(fields: [user_id], references: [id])
+  Book Book @relation(fields: [book_id], references: [id])
+
+  @@id([user_id, book_id])
+  @@map("user_books")
 }
 
 enum CATEGORY {

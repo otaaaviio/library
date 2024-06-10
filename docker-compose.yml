@@ -1,0 +1,51 @@
+services:
+  api:
+    container_name: library-node
+    image: node:20-alpine
+    restart: always
+    tty: true
+    ports:
+      - '${PORT}:${PORT}'
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/usr/app
+      - /usr/app/node_modules
+    working_dir: '/usr/app'
+    command: >
+      sh -c "npm install &&
+      npm run start:dev -- --preserveWatchOutput"
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE_NAME=${DB_DATABASE_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - PORT=${PORT}
+
+  db:
+    container_name: library-db
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_DATABASE_NAME}
+    ports:
+      - '${DB_PORT}:${DB_PORT}'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  redis:
+    container_name: library-redis
+    image: redis:alpine
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT}:${REDIS_PORT}'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  db_data:
+  redis_data:

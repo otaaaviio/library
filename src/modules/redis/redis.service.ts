@@ -1,11 +1,11 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import Redis, { RedisOptions } from 'ioredis';
 
 @Injectable()
 export class RedisService extends Redis implements OnModuleInit {
   constructor() {
     super({
-      host: 'redis',
+      host: 'library-redis',
       port: 6379,
     } as RedisOptions);
 
@@ -14,12 +14,5 @@ export class RedisService extends Redis implements OnModuleInit {
     });
   }
 
-  async onModuleInit() {
-    try {
-      await this.connect();
-    } catch (err) {
-      Logger.error('Failed to connect to Redis:', err);
-      throw err;
-    }
-  }
+  async onModuleInit() {}
 }

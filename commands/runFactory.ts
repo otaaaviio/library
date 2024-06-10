@@ -3,7 +3,7 @@ import { userFactory } from '../prisma/factories/UserFactory';
 import { bookFactory } from '../prisma/factories/BookFactory';
 import { authorFactory } from '../prisma/factories/AuthorFactory';
 import { publisherFactory } from '../prisma/factories/PublisherFactory';
-import { PrismaService } from '../src/prisma/prisma.service';
+import { PrismaService } from '../src/modules/prisma/prisma.service';
 
 const prisma = new PrismaService();
 
