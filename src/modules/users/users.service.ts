@@ -51,17 +51,18 @@ export class UsersService {
 
     const whereClause =getWhereClause(p.filters);
 
-    const total_data = await this.countUsers(whereClause);
-
-    const data = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-      where: whereClause,
-      take: p.items_per_page,
-      skip: p.items_per_page * (p.page - 1),
-    });
+    const [total_data, data] = await Promise.all([
+      this.countUsers(whereClause),
+      this.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: whereClause,
+        take: p.items_per_page,
+        skip: p.items_per_page * (p.page - 1),
+      }),
+    ]);
 
     const paginated_data = paginate(data, total_data, p);
 

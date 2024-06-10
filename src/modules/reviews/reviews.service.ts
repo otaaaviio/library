@@ -67,14 +67,15 @@ export class ReviewsService {
 
     const whereClause = getWhereClause(p.filters);
 
-    const total_data = await this.countReviews(whereClause);
-
-    const data = await this.prisma.review.findMany({
-      select: FindAllReviewSelect,
-      where: whereClause,
-      take: p.items_per_page,
-      skip: p.items_per_page * (p.page - 1),
-    });
+    const [total_data, data] = await Promise.all([
+      this.countReviews(whereClause),
+      this.prisma.review.findMany({
+        select: FindAllReviewSelect,
+        where: whereClause,
+        take: p.items_per_page,
+        skip: p.items_per_page * (p.page - 1),
+      }),
+    ]);
 
     const paginated_data = paginate(data, total_data, p);
 
