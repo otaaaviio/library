@@ -15,7 +15,24 @@ Users can create their own accounts, which are required to access some system's 
 
 ### CRUD Operations
 
-The system allows users to perform CRUD operations on books, publishers, reviews, authors.
+The system allows users to perform CRUD operations on books, publishers, reviews, authors, reading list of users.
+
+### Factories
+
+The system provides factories to generate fake data for testing purposes and populate the database with sample data.
+
+### Tests
+
+The system is thoroughly tested using Jest, a popular testing framework for JavaScript. The tests cover all the main
+features of the system, ensuring that it works as expected.
+
+### Redis Cache
+
+The system uses Redis to cache the most accessed data, improving performance and reducing the load on the database.
+
+### Docker
+
+The system is containerized using Docker, making it easy to deploy and scale.
 
 ### Endpoints
 
@@ -25,6 +42,7 @@ The system allows users to perform CRUD operations on books, publishers, reviews
 - /authors
 - /users
 - /sessions
+- /userbooks
 
 #### All endpoints, except /sessions, support the following HTTP methods:
 
@@ -45,6 +63,13 @@ The system allows users to perform CRUD operations on books, publishers, reviews
 This project requires the following dependencies:
 
 - [Docker compose](https://docs.docker.com/compose/install/)
+- An account in [Cloudinary](https://cloudinary.com/), after create an account, you need fill the .env file with the following information:
+
+```sh
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
 
 ### Installation
 
@@ -54,26 +79,35 @@ This project requires the following dependencies:
 git clone https://github.com/otaaaviio/library.git
 ```
 
-2. Run the following command to build the project
+2. Run the following command to build the project in first time
 
 ```sh
-docker compose build
+bin/setup.sh
 ```
 
 3. Run the following command to start the project
 
 ```sh
-docker compose up
+docker compose up -d
 ```
 
 ## Development
 
-### Running the tests
+### Factories
 
-To run the tests, run the following command
-
+Is possible to run the following factories:
+    
 ```sh
-docker exec -it library-node npm run test
+{ name: 'user', run: userFactory },
+{ name: 'book', run: bookFactory },
+{ name: 'author', run: authorFactory },
+{ name: 'publisher', run: publisherFactory },
+{ name: 'review', run: reviewFactory },
+```
+To run the factories, replacing [factory_name] with the desired factory and [quantity] with the desired quantity.
+Run the following command:
+```sh
+docker exec -it library-node npm run factory [factory_name] [quantity]
 ```
 
 ## Built With
@@ -83,6 +117,7 @@ docker exec -it library-node npm run test
 * [PostgreSQL](https://www.postgresql.org) - Database
 * [Docker](https://www.docker.com) - Containerization
 * [Jest](https://jestjs.io) - Testing framework
+* [Cloudinary](https://cloudinary.com) - Image storage
 
 ## Contributing
 
