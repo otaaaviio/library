@@ -32,7 +32,10 @@ export class UsersService {
       select: CreateOrEditUserSelect,
     });
 
-    await this.redis.del('users:*');
+    const keys = await this.redis.keys('users:*');
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
 
     return user;
   }
@@ -40,7 +43,7 @@ export class UsersService {
   async findAll(p: PaginationQueryParams) {
     validateFilters(p.filters, ['name']);
 
-    const redis_key = `users:page:${p.page}:where:${p.filters}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+    const redis_key = `users:page:${p.page}:where:${p.filters || 'all'}:orderBy:${p.order_by || 'none'}:itemsPerPage:${p.items_per_page}`;
 
     const cached_data = await this.redis.get(redis_key);
 
@@ -89,7 +92,10 @@ export class UsersService {
       select: CreateOrEditUserSelect,
     });
 
-    await this.redis.del('users:*');
+    const keys = await this.redis.keys('users:*');
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
 
     return user_updated;
   }
@@ -122,6 +128,9 @@ export class UsersService {
       },
     });
 
-    await this.redis.del('users:*');
+    const keys = await this.redis.keys('users:*');
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
   }
 }

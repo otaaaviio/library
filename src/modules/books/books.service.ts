@@ -28,7 +28,7 @@ export class BooksService {
     };
 
     private verifyBookOwnership = (book: any, user: Request['user']) => {
-        if (book.created_by !== user.id && !user.is_admin)
+        if (book.CreatedBy.id !== user.id && !user.is_admin)
             throw new HttpException(
                 'You are not allowed to delete this book',
                 HttpStatus.UNAUTHORIZED,
@@ -75,7 +75,10 @@ export class BooksService {
             select: CreateOrEditBookSelect,
         });
 
-        await this.redis.del('books:*');
+        const keys = await this.redis.keys('books:*');
+        for (const key of keys) {
+            await this.redis.del(key);
+        }
 
         return book;
     }
@@ -89,7 +92,7 @@ export class BooksService {
             'published_at',
         ]);
 
-        const redis_key = `books:page:${p.page}:where:${JSON.stringify(p.filters)}:orderBy:${p.order_by}:itemsPerPage:${p.items_per_page}`;
+        const redis_key = `books:page:${p.page}:where:${p.filters || 'all'}:orderBy:${p.order_by || 'none'}:itemsPerPage:${p.items_per_page}`;
 
         const cached_data = await this.redis.get(redis_key);
 
@@ -225,7 +228,10 @@ export class BooksService {
             select: CreateOrEditBookSelect,
         });
 
-        await this.redis.del('books:*');
+        const keys = await this.redis.keys('books:*');
+        for (const key of keys) {
+            await this.redis.del(key);
+        }
 
         return book_updated;
     }
@@ -248,7 +254,10 @@ export class BooksService {
             },
         });
 
-        await this.redis.del('books:*');
+        const keys = await this.redis.keys('books:*');
+        for (const key of keys) {
+            await this.redis.del(key);
+        }
 
         return book_deleted;
     }
