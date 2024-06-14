@@ -52,10 +52,7 @@ export class BooksController {
     async findOne(@Param('id') id: string, @Res() res) {
         try {
             const book = await this.booksService.findOne(Number(id));
-            if (book) return res.status(HttpStatus.OK).json(book);
-            return res
-                .status(HttpStatus.NOT_FOUND)
-                .send({message: 'Book not found'});
+            return res.status(HttpStatus.OK).json(book);
         } catch (err) {
             this.logger.error(`Failed to get book:\n ${err}`);
             throw err;

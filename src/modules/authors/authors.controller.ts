@@ -48,10 +48,7 @@ export class AuthorsController {
     async findOne(@Param('id') id: string, @Res() res) {
         try {
             const author = await this.authorsService.findOne(Number(id));
-            if (author) return res.status(HttpStatus.OK).json(author);
-            return res
-                .status(HttpStatus.NOT_FOUND)
-                .send({message: 'Author not found'});
+            return res.status(HttpStatus.OK).json(author);
         } catch (err) {
             this.logger.error(`Failed to get author:\n ${err}`);
             throw err;
