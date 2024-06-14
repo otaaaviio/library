@@ -1,5 +1,7 @@
 import {PaginationQueryParams} from './validation';
 import {InvalidFilterException} from "../../exceptions/InvalidFilterException";
+import {Request} from "express";
+import {NotAllowedException} from "../../exceptions/NotAllowedException";
 
 interface IFilter {
     field: string;
@@ -57,4 +59,9 @@ function getWhereClause(filters?: IFilter[]) {
     return whereClause;
 }
 
-export {paginate, validateFilters, getWhereClause};
+function verifyOwnership(model: any, user: Request['user']) {
+    if (model.CreatedBy?.id !== user.id && !user.is_admin)
+        throw new NotAllowedException();
+}
+
+export {paginate, validateFilters, getWhereClause, verifyOwnership};

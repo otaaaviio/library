@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {PrismaService} from '../prisma/prisma.service';
 import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
-import {getWhereClause, paginate, validateFilters} from '../utils/utils';
+import {getWhereClause, paginate, validateFilters, verifyOwnership} from '../utils/utils';
 import {CreateBookDto} from './books.validation';
 import {Request} from 'express';
 import {CloudinaryService} from "../cloudinary/cloudinary.service";
@@ -28,11 +28,6 @@ export class BooksService {
             where: whereClause,
         });
     };
-
-    private verifyBookOwnership = (book: any, user: Request['user']) => {
-        if (book.CreatedBy?.id !== user.id && !user.is_admin)
-            throw new NotAllowedException();
-    }
 
     async create(data: CreateBookDto, user_id: number) {
         const imageUrls = await Promise.all(data.images.map(async (image, index) => {
@@ -174,7 +169,7 @@ export class BooksService {
 
         let imageUrls: string[] = [];
 
-        this.verifyBookOwnership(book, user);
+        verifyOwnership(book, user);
 
         if (!!data.images)
             await this.prisma.bookImage.deleteMany({
@@ -239,7 +234,7 @@ export class BooksService {
     async remove(id: number, user: Request['user']) {
         const book = await this.findOne(id);
 
-        this.verifyBookOwnership(book, user);
+        verifyOwnership(book, user);
 
         const book_deleted = this.prisma.book.update({
             where: {
