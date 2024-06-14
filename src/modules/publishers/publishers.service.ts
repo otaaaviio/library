@@ -15,7 +15,7 @@ export class PublishersService {
     }
 
     async create(data: CreateOrEditPublisherDto, user_id: number) {
-        const publisher = this.prisma.publisher.create({
+        const publisher = await this.prisma.publisher.create({
             data: {
                 name: data.name,
                 CreatedBy: {
@@ -58,7 +58,7 @@ export class PublishersService {
     }
 
     async findOne(id: number) {
-        const publisher = this.prisma.publisher.findUnique({
+        const publisher = await this.prisma.publisher.findUnique({
             where: {
                 id: id,
                 deleted_at: null,
@@ -72,6 +72,11 @@ export class PublishersService {
                         title: true,
                     },
                 },
+                CreatedBy: {
+                    select: {
+                        id: true
+                    }
+                }
             },
         });
 
@@ -89,7 +94,7 @@ export class PublishersService {
 
         verifyOwnership(publisher, user)
 
-        const publisher_updated = this.prisma.publisher.update({
+        const publisher_updated = await this.prisma.publisher.update({
             where: {
                 id: id,
                 deleted_at: null,
@@ -118,7 +123,7 @@ export class PublishersService {
 
         verifyOwnership(publisher, user)
 
-        const publisher_deleted = this.prisma.publisher.update({
+        const publisher_deleted = await this.prisma.publisher.update({
             where: {
                 id: id,
                 deleted_at: null,

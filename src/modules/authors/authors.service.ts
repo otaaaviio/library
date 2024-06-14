@@ -15,7 +15,7 @@ export class AuthorsService {
     }
 
     async create(data: CreateOrEditAuthorDto, user_id: number) {
-        const author = this.prisma.author.create({
+        const author = await this.prisma.author.create({
             data: {
                 name: data.name,
                 CreatedBy: {
@@ -58,7 +58,7 @@ export class AuthorsService {
     }
 
     async findOne(id: number) {
-        const author = this.prisma.author.findUnique({
+        const author = await this.prisma.author.findUnique({
             where: {
                 id: id,
                 deleted_at: null,
@@ -72,6 +72,11 @@ export class AuthorsService {
                         title: true,
                     },
                 },
+                CreatedBy: {
+                    select: {
+                        id: true
+                    },
+                }
             },
         });
 
@@ -85,7 +90,7 @@ export class AuthorsService {
 
         verifyOwnership(author, user);
 
-        const author_updated = this.prisma.author.update({
+        const author_updated = await this.prisma.author.update({
             where: {
                 id: id,
                 deleted_at: null,
@@ -114,7 +119,7 @@ export class AuthorsService {
 
         verifyOwnership(author, user);
 
-        const author_deleted = this.prisma.author.update({
+        const author_deleted = await this.prisma.author.update({
             where: {
                 id: id,
                 deleted_at: null,

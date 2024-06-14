@@ -35,7 +35,7 @@ export class BooksService {
             return await this.cloudinary.uploadImage(image, public_id);
         }));
 
-        const book = this.prisma.book.create({
+        const book = await this.prisma.book.create({
             data: {
                 title: data.title,
                 description: data.description,
@@ -236,7 +236,7 @@ export class BooksService {
 
         verifyOwnership(book, user);
 
-        const book_deleted = this.prisma.book.update({
+        const book_deleted = await this.prisma.book.update({
             where: {
                 id: id,
                 deleted_at: null,

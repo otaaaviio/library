@@ -17,10 +17,6 @@ export class ErrorPrismaHandlerMiddleware implements ExceptionFilter {
         let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
         switch (exception.code) {
-            case 'P2025':
-                message = 'Record not found';
-                statusCode = HttpStatus.NOT_FOUND;
-                break;
             case 'P2003':
                 message = 'Record already exists';
                 statusCode = HttpStatus.BAD_REQUEST;

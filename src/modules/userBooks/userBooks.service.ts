@@ -12,7 +12,7 @@ export class UserBooksService {
     }
 
     async create(book_id: number, user_id: number) {
-        const user_book = this.prisma.userBook.create({
+        const user_book = await this.prisma.userBook.create({
             data: {
                 Book: {
                     connect: {id: book_id}
@@ -74,7 +74,7 @@ export class UserBooksService {
     }
 
     async remove(book_id: number, user_id: number) {
-        const user_book = this.prisma.userBook.delete({
+        const user_book = await this.prisma.userBook.delete({
             where: {
                 user_id_book_id: {
                     user_id: user_id,

@@ -6,14 +6,11 @@ import {
     Get,
     Body,
     HttpStatus,
-    Query,
     Req,
-    HttpException,
 } from '@nestjs/common';
 import {UserBooksService} from "./userBooks.service";
 import {UserBookDto} from "./userBooks.validation";
-import {PaginationQueryParams} from "../utils/validation";
-import {plainToClass} from 'class-transformer';
+import {InvalidActionException} from "../../exceptions/InvalidActionException";
 
 @Controller('userBooks')
 export class UserBooksController {
@@ -41,9 +38,9 @@ export class UserBooksController {
                     response = await this.userBooksService.remove(body.book_id, req.user.id);
                     break;
                 default:
-                    return new HttpException('Invalid action', HttpStatus.BAD_REQUEST);
+                    return new InvalidActionException();
             }
-            return res.status(200).json({message: body.action + ' successfully', response});
+            return res.status(HttpStatus.OK).json({message: body.action + ' successfully', response});
         } catch (err) {
             this.logger.error(`Failed to ${body.action}:\n ${err}`);
             throw err;
@@ -54,7 +51,7 @@ export class UserBooksController {
     async getListOfBooks(@Res() res, @Req() req) {
         try {
             const response = await this.userBooksService.findAll(req.user.id);
-            return res.status(200).json(response);
+            return res.status(HttpStatus.OK).json(response);
         } catch (err) {
             this.logger.error(`Failed to get response:\n ${err}`);
             throw err;
