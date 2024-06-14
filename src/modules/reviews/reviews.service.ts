@@ -4,7 +4,7 @@ import { RedisService } from '../redis/redis.service';
 import { PaginationQueryParams } from '../utils/validation';
 import {
   getWhereClause,
-  paginate,
+  paginate, sortedStringify,
   validateFilters,
   verifyOwnership,
 } from '../utils/utils';
@@ -65,7 +65,7 @@ export class ReviewsService {
   async findAll(p: PaginationQueryParams) {
     validateFilters(p.filters, ['rating', 'created_by', 'book_id']);
 
-    const redis_key = `reviews:page:${p.page}:where:${p.filters || 'all'}:orderBy:${p.order_by || 'none'}:itemsPerPage:${p.items_per_page}`;
+    const redis_key = `reviews:page:${p.page}:where:${sortedStringify(p.filters) || 'all'}:orderBy:${sortedStringify(p.order_by) || 'none'}:itemsPerPage:${p.items_per_page}`;
 
     const cached_data = await this.redis.get(redis_key);
 

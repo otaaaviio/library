@@ -64,4 +64,12 @@ function verifyOwnership(model: any, user: Request['user']) {
     throw new NotAllowedException();
 }
 
-export { paginate, validateFilters, getWhereClause, verifyOwnership };
+function sortedStringify(obj) {
+    if (typeof obj !== 'object' || obj === null) return JSON.stringify(obj);
+    return JSON.stringify(Object.keys(obj).sort().reduce((result, key) => {
+        result[key] = sortedStringify(obj[key]);
+        return result;
+    }, {}));
+}
+
+export { paginate, validateFilters, getWhereClause, verifyOwnership, sortedStringify };
