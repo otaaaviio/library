@@ -44,7 +44,7 @@ The system is containerized using Docker, making it easy to deploy and scale.
 - /sessions
 - /userbooks
 
-#### All endpoints, except /sessions, support the following HTTP methods:
+#### All endpoints, except /sessions and /userbooks, support the following HTTP methods:
 
 ```GET /``` Get all
 
@@ -121,7 +121,7 @@ docker exec -it library-node npm run factory [factory_name] [quantity]
 
 ## Contributing
 
-Fork the project and create a pull request.
+Fork the project and create a pull request, the project follow nest project structure. If you follow the same structure, all will work fine :)
 
 ## Conclusion
 
