@@ -39,24 +39,27 @@ function validateFilters(filters: IFilter[], allowedFilters: string[]): void {
 }
 
 function getWhereClause(filters?: IFilter[]) {
-  const whereClause = {
-    deleted_at: null,
-  };
+    const whereClause = {
+        deleted_at: null,
+    };
 
-  if (!Array.isArray(filters)) return whereClause;
+    if (!Array.isArray(filters)) return whereClause;
 
-  for (const filter of filters) {
-    if (filter)
-      if (filter.field.endsWith('_id') || filter.field.endsWith('_by')) {
-        whereClause[filter.field] = Number(filter.value);
-      } else {
-        whereClause[filter.field] = {
-          contains: filter.value,
-        };
-      }
-  }
+    for (const filter of filters) {
+        if (filter)
+            if (filter.field.endsWith('_id') || filter.field.endsWith('_by')) {
+                whereClause[filter.field] = Number(filter.value);
+            } else {
+                whereClause[filter.field] = typeof filter.value === 'string' ? {
+                    contains: filter.value.toLowerCase(),
+                    mode: 'insensitive'
+                } : {
+                    contains: filter.value
+                };
+            }
+    }
 
-  return whereClause;
+    return whereClause;
 }
 
 function verifyOwnership(model: any, user: Request['user']) {

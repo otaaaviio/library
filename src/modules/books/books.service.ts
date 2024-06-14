@@ -92,7 +92,7 @@ export class BooksService {
     ]);
 
     const redis_key = `books:page:${p.page}:where:${sortedStringify(p.filters) || 'all'}:orderBy:${sortedStringify(p.order_by) || 'none'}:itemsPerPage:${p.items_per_page}`;
-console.log(redis_key)
+
     const cached_data = await this.redis.get(redis_key);
 
     if (cached_data) return JSON.parse(cached_data);
