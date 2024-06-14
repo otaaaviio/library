@@ -1,67 +1,67 @@
-import {PaginationQueryParams} from './validation';
-import {InvalidFilterException} from "../../exceptions/InvalidFilterException";
-import {Request} from "express";
-import {NotAllowedException} from "../../exceptions/NotAllowedException";
+import { PaginationQueryParams } from './validation';
+import { InvalidFilterException } from '../../exceptions/InvalidFilterException';
+import { Request } from 'express';
+import { NotAllowedException } from '../../exceptions/NotAllowedException';
 
 interface IFilter {
-    field: string;
-    value: string | number;
+  field: string;
+  value: string | number;
 }
 
 function paginate(data: any, count_total: number, p: PaginationQueryParams) {
-    const total_pages = Math.ceil(count_total / p.items_per_page) || 1;
+  const total_pages = Math.ceil(count_total / p.items_per_page) || 1;
 
-    return {
-        data: data,
-        pagination: {
-            page: p.page,
-            per_page: p.items_per_page,
-            total: count_total,
-            total_pages: total_pages,
-        },
-    };
+  return {
+    data: data,
+    pagination: {
+      page: p.page,
+      per_page: p.items_per_page,
+      total: count_total,
+      total_pages: total_pages,
+    },
+  };
 }
 
 function validateFilters(filters: IFilter[], allowedFilters: string[]): void {
-    if (!filters) return;
+  if (!filters) return;
 
-    filters.map(key => {
-        if (!allowedFilters.includes(key.field)) {
-            throw new InvalidFilterException(key.field);
-        }
+  filters.map((key) => {
+    if (!allowedFilters.includes(key.field)) {
+      throw new InvalidFilterException(key.field);
+    }
 
-        if (key.field.endsWith('_id') || key.field.endsWith('_by')) {
-            key.value = Number(key.value);
-        }
-    })
+    if (key.field.endsWith('_id') || key.field.endsWith('_by')) {
+      key.value = Number(key.value);
+    }
+  });
 
-    return;
+  return;
 }
 
 function getWhereClause(filters?: IFilter[]) {
-    const whereClause = {
-        deleted_at: null,
-    };
+  const whereClause = {
+    deleted_at: null,
+  };
 
-    if (!Array.isArray(filters)) return whereClause;
+  if (!Array.isArray(filters)) return whereClause;
 
-    for (const filter of filters) {
-        if (filter)
-            if (filter.field.endsWith('_id') || filter.field.endsWith('_by')) {
-                whereClause[filter.field] = Number(filter.value);
-            } else {
-                whereClause[filter.field] = {
-                    contains: filter.value,
-                };
-            }
-    }
+  for (const filter of filters) {
+    if (filter)
+      if (filter.field.endsWith('_id') || filter.field.endsWith('_by')) {
+        whereClause[filter.field] = Number(filter.value);
+      } else {
+        whereClause[filter.field] = {
+          contains: filter.value,
+        };
+      }
+  }
 
-    return whereClause;
+  return whereClause;
 }
 
 function verifyOwnership(model: any, user: Request['user']) {
-    if (model.CreatedBy?.id !== user.id && !user.is_admin)
-        throw new NotAllowedException();
+  if (model.CreatedBy?.id !== user.id && !user.is_admin)
+    throw new NotAllowedException();
 }
 
-export {paginate, validateFilters, getWhereClause, verifyOwnership};
+export { paginate, validateFilters, getWhereClause, verifyOwnership };

@@ -23,12 +23,13 @@ export class SessionsService {
         email: true,
         password: true,
         is_admin: true,
-      }
+      },
     });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     const passwordMatched = await bcrypt.compare(password, user.password);
-    if (!passwordMatched) throw new HttpException('Invalid password', HttpStatus.UNAUTHORIZED);
+    if (!passwordMatched)
+      throw new HttpException('Invalid password', HttpStatus.UNAUTHORIZED);
 
     return user;
   }
@@ -68,13 +69,13 @@ export class SessionsService {
     const token = await this.jwtService.sign(payload);
 
     const userPayload = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        is_admin: user.is_admin,
-    }
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      is_admin: user.is_admin,
+    };
 
-    return {token, user: userPayload};
+    return { token, user: userPayload };
   }
 
   public async delete(user_id: number, token: string) {

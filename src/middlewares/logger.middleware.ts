@@ -4,9 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  constructor(
-      private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly jwtService: JwtService) {}
 
   private logger = new Logger('HTTP');
 
@@ -20,9 +18,9 @@ export class LoggerMiddleware implements NestMiddleware {
 
     // some routes not require authentication, so no have req.user
     let user_id = null;
-    if(!user) {
+    if (!user) {
       const token = req.cookies['token'];
-      if(token) {
+      if (token) {
         user_id = await this.getUserIdFromToken(token);
       }
     }
