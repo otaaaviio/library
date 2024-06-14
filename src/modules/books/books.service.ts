@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {PrismaService} from '../prisma/prisma.service';
 import {RedisService} from '../redis/redis.service';
 import {PaginationQueryParams} from '../utils/validation';
@@ -11,6 +11,8 @@ import {
     FindAllBookSelect,
     FindOneBookSelect
 } from './books.select';
+import {NotFoundException} from "../../exceptions/NotFoundException";
+import {NotAllowedException} from "../../exceptions/NotAllowedException";
 
 @Injectable()
 export class BooksService {
@@ -28,11 +30,8 @@ export class BooksService {
     };
 
     private verifyBookOwnership = (book: any, user: Request['user']) => {
-        if (book.CreatedBy.id !== user.id && !user.is_admin)
-            throw new HttpException(
-                'You are not allowed to delete this book',
-                HttpStatus.UNAUTHORIZED,
-            );
+        if (book.CreatedBy?.id !== user.id && !user.is_admin)
+            throw new NotAllowedException();
     }
 
     async create(data: CreateBookDto, user_id: number) {
@@ -153,7 +152,7 @@ export class BooksService {
             select: FindOneBookSelect,
         });
 
-        if (!book) throw new HttpException('Book not found', HttpStatus.NOT_FOUND);
+        if (!book) throw new NotFoundException('Book');
 
         const reviewInfo = await this.prisma.review.aggregate({
             where: {book_id: book.id},
@@ -172,11 +171,12 @@ export class BooksService {
 
     async update(id: number, data: CreateBookDto, user: Request['user']) {
         const book = await this.findOne(id);
+
         let imageUrls: string[] = [];
 
         this.verifyBookOwnership(book, user);
 
-        if(!!data.images)
+        if (!!data.images)
             await this.prisma.bookImage.deleteMany({
                 where: {
                     Book: {

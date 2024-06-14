@@ -15,7 +15,7 @@ import {
 import {PaginationQueryParams} from '../utils/validation';
 import {CreateBookDto, EditBookDto} from './books.validation';
 import {BooksService} from './books.service';
-import { plainToClass } from 'class-transformer';
+import {plainToClass} from 'class-transformer';
 
 @Controller('books')
 export class BooksController {
@@ -29,7 +29,7 @@ export class BooksController {
         try {
             const book = await this.booksService.create(data, Number(req.user.id));
             return res
-                .status(201)
+                .status(HttpStatus.CREATED)
                 .send({message: 'Book created successfully', book: book});
         } catch (err) {
             this.logger.error(`Failed to create book:\n ${err}`);
@@ -38,7 +38,7 @@ export class BooksController {
     }
 
     @Get()
-    async findAll(@Query() params: any) {
+    async findAll(@Query() params: PaginationQueryParams) {
         params = plainToClass(PaginationQueryParams, params);
         try {
             return this.booksService.findAll(params);
@@ -52,7 +52,7 @@ export class BooksController {
     async findOne(@Param('id') id: string, @Res() res) {
         try {
             const book = await this.booksService.findOne(Number(id));
-            if (book) return res.status(200).json(book);
+            if (book) return res.status(HttpStatus.OK).json(book);
             return res
                 .status(HttpStatus.NOT_FOUND)
                 .send({message: 'Book not found'});
@@ -72,7 +72,7 @@ export class BooksController {
         try {
             const book = await this.booksService.update(Number(id), data, req.user);
             return res
-                .status(200)
+                .status(HttpStatus.OK)
                 .send({message: 'Book updated successfully', book});
         } catch (err) {
             this.logger.error(`Failed to update book:\n ${err}`);
@@ -85,7 +85,7 @@ export class BooksController {
         try {
             await this.booksService.remove(Number(id), req.user);
             return res
-                .status(200)
+                .status(HttpStatus.OK)
                 .send({message: `Book with ID ${id} deleted successfully`});
         } catch (err) {
             this.logger.error(`Failed to delete book:\n ${err}`);

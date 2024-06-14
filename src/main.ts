@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
-import { ErrorHandlerMiddleware } from './middlewares/errorHandler.middleware';
+import { ErrorPrismaHandlerMiddleware } from './middlewares/errorPrismaHandlerMiddleware';
 import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
@@ -11,7 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
-  app.useGlobalFilters(new ErrorHandlerMiddleware());
+  app.useGlobalFilters(new ErrorPrismaHandlerMiddleware());
   app.useGlobalPipes(new ValidationPipe());
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));

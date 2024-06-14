@@ -1,4 +1,5 @@
 import {PaginationQueryParams} from './validation';
+import {InvalidFilterException} from "../../exceptions/InvalidFilterException";
 
 interface IFilter {
     field: string;
@@ -24,7 +25,7 @@ function validateFilters(filters: IFilter[], allowedFilters: string[]): void {
 
     filters.map(key => {
         if (!allowedFilters.includes(key.field)) {
-            throw new Error(`Invalid filter: ${key.field}`);
+            throw new InvalidFilterException(key.field);
         }
 
         if (key.field.endsWith('_id') || key.field.endsWith('_by')) {
