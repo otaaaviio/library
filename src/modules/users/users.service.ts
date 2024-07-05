@@ -6,7 +6,8 @@ import { RedisService } from '../redis/redis.service';
 import { PaginationQueryParams } from '../utils/validation';
 import {
   getWhereClause,
-  paginate, sortedStringify,
+  paginate,
+  sortedStringify,
   validateFilters,
 } from '../utils/utils';
 import { Request } from 'express';

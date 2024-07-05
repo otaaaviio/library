@@ -39,27 +39,30 @@ function validateFilters(filters: IFilter[], allowedFilters: string[]): void {
 }
 
 function getWhereClause(filters?: IFilter[]) {
-    const whereClause = {
-        deleted_at: null,
-    };
+  const whereClause = {
+    deleted_at: null,
+  };
 
-    if (!Array.isArray(filters)) return whereClause;
+  if (!Array.isArray(filters)) return whereClause;
 
-    for (const filter of filters) {
-        if (filter)
-            if (filter.field.endsWith('_id') || filter.field.endsWith('_by')) {
-                whereClause[filter.field] = Number(filter.value);
-            } else {
-                whereClause[filter.field] = typeof filter.value === 'string' ? {
-                    contains: filter.value.toLowerCase(),
-                    mode: 'insensitive'
-                } : {
-                    contains: filter.value
-                };
-            }
-    }
+  for (const filter of filters) {
+    if (filter)
+      if (filter.field.endsWith('_id') || filter.field.endsWith('_by')) {
+        whereClause[filter.field] = Number(filter.value);
+      } else {
+        whereClause[filter.field] =
+          typeof filter.value === 'string'
+            ? {
+                contains: filter.value.toLowerCase(),
+                mode: 'insensitive',
+              }
+            : {
+                contains: filter.value,
+              };
+      }
+  }
 
-    return whereClause;
+  return whereClause;
 }
 
 function verifyOwnership(model: any, user: Request['user']) {
@@ -68,11 +71,21 @@ function verifyOwnership(model: any, user: Request['user']) {
 }
 
 function sortedStringify(obj) {
-    if (typeof obj !== 'object' || obj === null) return JSON.stringify(obj);
-    return JSON.stringify(Object.keys(obj).sort().reduce((result, key) => {
+  if (typeof obj !== 'object' || obj === null) return JSON.stringify(obj);
+  return JSON.stringify(
+    Object.keys(obj)
+      .sort()
+      .reduce((result, key) => {
         result[key] = sortedStringify(obj[key]);
         return result;
-    }, {}));
+      }, {}),
+  );
 }
 
-export { paginate, validateFilters, getWhereClause, verifyOwnership, sortedStringify };
+export {
+  paginate,
+  validateFilters,
+  getWhereClause,
+  verifyOwnership,
+  sortedStringify,
+};

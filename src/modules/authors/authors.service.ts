@@ -13,10 +13,14 @@ import { AuthorsServiceInterface } from './interfaces/authors-service.interface'
 export class AuthorsService implements AuthorsServiceInterface {
   constructor(
     private readonly redis: RedisService,
-    @Inject('AuthorsRepositoryInterface') private readonly repository: AuthorsRepositoryInterface
+    @Inject('AuthorsRepositoryInterface')
+    private readonly repository: AuthorsRepositoryInterface,
   ) {}
 
-  async createAuthor(data: CreateOrEditAuthorValidation, user_id: number): Promise<AuthorDto> {
+  async createAuthor(
+    data: CreateOrEditAuthorValidation,
+    user_id: number,
+  ): Promise<AuthorDto> {
     const author = await this.repository.createAuthor(data, user_id);
 
     await this.redis.del('authors');
@@ -46,7 +50,11 @@ export class AuthorsService implements AuthorsServiceInterface {
     return author;
   }
 
-  async updateAuthor(id: number, data: CreateOrEditAuthorValidation, user: Request['user']): Promise<AuthorDto> {
+  async updateAuthor(
+    id: number,
+    data: CreateOrEditAuthorValidation,
+    user: Request['user'],
+  ): Promise<AuthorDto> {
     const author = await this.findOneAuthor(id);
 
     verifyOwnership(author, user);

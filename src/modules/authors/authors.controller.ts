@@ -20,18 +20,20 @@ export class AuthorsController {
   private logger: Logger;
 
   constructor(
-    @Inject('AuthorsServiceInterface') private readonly service: AuthorsServiceInterface
+    @Inject('AuthorsServiceInterface')
+    private readonly service: AuthorsServiceInterface,
   ) {
-    this.logger = new Logger(AuthorsController.name)
+    this.logger = new Logger(AuthorsController.name);
   }
 
   @Post()
-  async create(@Body() data: CreateOrEditAuthorValidation, @Res() res, @Req() req) {
+  async create(
+    @Body() data: CreateOrEditAuthorValidation,
+    @Res() res,
+    @Req() req,
+  ) {
     try {
-      const author = await this.service.createAuthor(
-        data,
-        Number(req.user.id),
-      );
+      const author = await this.service.createAuthor(data, Number(req.user.id));
       return res
         .status(HttpStatus.CREATED)
         .send({ message: 'Author created successfully', author: author });

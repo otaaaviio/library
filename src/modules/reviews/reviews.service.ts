@@ -4,7 +4,8 @@ import { RedisService } from '../redis/redis.service';
 import { PaginationQueryParams } from '../utils/validation';
 import {
   getWhereClause,
-  paginate, sortedStringify,
+  paginate,
+  sortedStringify,
   validateFilters,
   verifyOwnership,
 } from '../utils/utils';

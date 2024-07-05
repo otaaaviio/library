@@ -13,10 +13,14 @@ import { PublisherDetailedDto } from './dto/publisher-detailed.dto';
 export class PublishersService implements PublishersServiceInterface {
   constructor(
     private readonly redis: RedisService,
-    @Inject('PublisherRepositoryInterface') private readonly repository: PublishersRepositoryInterface,
+    @Inject('PublisherRepositoryInterface')
+    private readonly repository: PublishersRepositoryInterface,
   ) {}
 
-  async create(data: CreateOrEditPublisherValidation, user_id: number): Promise<PublisherDto> {
+  async create(
+    data: CreateOrEditPublisherValidation,
+    user_id: number,
+  ): Promise<PublisherDto> {
     const publisher = await this.repository.createPublisher(data, user_id);
 
     await this.redis.del('publishers');
@@ -50,19 +54,23 @@ export class PublishersService implements PublishersServiceInterface {
     id: number,
     data: CreateOrEditPublisherValidation,
     user: Request['user'],
-  ): Promise<PublisherDto>  {
+  ): Promise<PublisherDto> {
     const publisher = await this.findOne(id);
 
     verifyOwnership(publisher, user);
 
-    const publisher_updated = await this.repository.updatePublisher(id, data, user.id);
+    const publisher_updated = await this.repository.updatePublisher(
+      id,
+      data,
+      user.id,
+    );
 
     await this.redis.del('publishers');
 
     return publisher_updated;
   }
 
-  async remove(id: number, user: Request['user']): Promise<void>  {
+  async remove(id: number, user: Request['user']): Promise<void> {
     const publisher = await this.findOne(id);
 
     verifyOwnership(publisher, user);

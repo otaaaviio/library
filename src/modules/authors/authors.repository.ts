@@ -12,7 +12,10 @@ export class AuthorsRepository implements AuthorsRepositoryInterface {
     this.prisma = new PrismaService();
   }
 
-  async createAuthor(data: CreateOrEditAuthorValidation, user_id: number): Promise<AuthorDto> {
+  async createAuthor(
+    data: CreateOrEditAuthorValidation,
+    user_id: number,
+  ): Promise<AuthorDto> {
     const new_author = await this.prisma.author.create({
       data: {
         name: data.name,
@@ -28,13 +31,10 @@ export class AuthorsRepository implements AuthorsRepositoryInterface {
       },
     });
 
-    return new AuthorDto(
-      new_author.id,
-      new_author.name,
-    );
+    return new AuthorDto(new_author.id, new_author.name);
   }
 
-  async findOneAuthor(id: number): Promise<AuthorDetailedDto> {
+  async findOneAuthor(id: number): Promise<AuthorDetailedDto | null> {
     const author = await this.prisma.author.findUnique({
       where: {
         id: id,
@@ -57,6 +57,8 @@ export class AuthorsRepository implements AuthorsRepositoryInterface {
       },
     });
 
+    if (!author) return null;
+
     return new AuthorDetailedDto(
       author.id,
       author.name,
@@ -76,13 +78,14 @@ export class AuthorsRepository implements AuthorsRepositoryInterface {
       },
     });
 
-    return authors.map(author => new AuthorDto(
-      author.id,
-      author.name,
-    ));
+    return authors.map((author) => new AuthorDto(author.id, author.name));
   }
 
-  async updateAuthor(id: number, data: CreateOrEditAuthorValidation, user: Request['user']): Promise<AuthorDto> {
+  async updateAuthor(
+    id: number,
+    data: CreateOrEditAuthorValidation,
+    user: Request['user'],
+  ): Promise<AuthorDto> {
     const author_updated = await this.prisma.author.update({
       where: {
         id: id,
@@ -102,10 +105,7 @@ export class AuthorsRepository implements AuthorsRepositoryInterface {
       },
     });
 
-    return new AuthorDto(
-      author_updated.id,
-      author_updated.name,
-    );
+    return new AuthorDto(author_updated.id, author_updated.name);
   }
 
   async deleteAuthor(id: number): Promise<void> {

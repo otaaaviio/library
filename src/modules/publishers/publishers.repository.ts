@@ -11,7 +11,10 @@ export class PublishersRepository implements PublishersRepositoryInterface {
     this.prisma = new PrismaService();
   }
 
-  async createPublisher(data: CreateOrEditPublisherValidation, user_id: number): Promise<PublisherDto> {
+  async createPublisher(
+    data: CreateOrEditPublisherValidation,
+    user_id: number,
+  ): Promise<PublisherDto> {
     const new_publisher = await this.prisma.publisher.create({
       data: {
         name: data.name,
@@ -27,10 +30,7 @@ export class PublishersRepository implements PublishersRepositoryInterface {
       },
     });
 
-    return new PublisherDto(
-      new_publisher.id,
-      new_publisher.name,
-    );
+    return new PublisherDto(new_publisher.id, new_publisher.name);
   }
 
   async findAllPublishers(): Promise<PublisherDto[]> {
@@ -44,10 +44,9 @@ export class PublishersRepository implements PublishersRepositoryInterface {
       },
     });
 
-    return publishers.map(publisher => new PublisherDto(
-      publisher.id,
-      publisher.name,
-    ));
+    return publishers.map(
+      (publisher) => new PublisherDto(publisher.id, publisher.name),
+    );
   }
 
   async findOnePublisher(id: number): Promise<PublisherDetailedDto | null> {
@@ -78,7 +77,7 @@ export class PublishersRepository implements PublishersRepositoryInterface {
     return new PublisherDetailedDto(
       publisher.id,
       publisher.name,
-      publisher.Books.map(book => ({
+      publisher.Books.map((book) => ({
         id: book.id,
         title: book.title,
       })),
@@ -86,7 +85,11 @@ export class PublishersRepository implements PublishersRepositoryInterface {
     );
   }
 
-  async updatePublisher(id: number, data: CreateOrEditPublisherValidation, user_id: number): Promise<PublisherDto> {
+  async updatePublisher(
+    id: number,
+    data: CreateOrEditPublisherValidation,
+    user_id: number,
+  ): Promise<PublisherDto> {
     const publisher_updated = await this.prisma.publisher.update({
       where: {
         id: id,
@@ -106,10 +109,7 @@ export class PublishersRepository implements PublishersRepositoryInterface {
       },
     });
 
-    return new PublisherDto(
-      publisher_updated.id,
-      publisher_updated.name,
-    );
+    return new PublisherDto(publisher_updated.id, publisher_updated.name);
   }
 
   async deletePublisher(id: number): Promise<void> {

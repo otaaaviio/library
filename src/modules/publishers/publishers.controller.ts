@@ -20,16 +20,18 @@ export class PublishersController {
   private logger = new Logger(PublishersController.name);
 
   constructor(
-    @Inject('PublishersServiceInterface') private readonly service: PublishersServiceInterface,
+    @Inject('PublishersServiceInterface')
+    private readonly service: PublishersServiceInterface,
   ) {}
 
   @Post()
-  async create(@Body() data: CreateOrEditPublisherValidation, @Res() res, @Req() req) {
+  async create(
+    @Body() data: CreateOrEditPublisherValidation,
+    @Res() res,
+    @Req() req,
+  ) {
     try {
-      const publisher = await this.service.create(
-        data,
-        Number(req.user.id),
-      );
+      const publisher = await this.service.create(data, Number(req.user.id));
       return res.status(HttpStatus.CREATED).send({
         message: 'Publisher created successfully',
         publisher: publisher,
@@ -69,11 +71,7 @@ export class PublishersController {
     @Req() req,
   ) {
     try {
-      const publisher = await this.service.update(
-        Number(id),
-        data,
-        req.user,
-      );
+      const publisher = await this.service.update(Number(id), data, req.user);
       return res
         .status(HttpStatus.OK)
         .send({ message: 'Publisher updated successfully', publisher });

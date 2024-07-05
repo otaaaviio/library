@@ -11,12 +11,12 @@ import { PublishersRepository } from './publishers.repository';
   providers: [
     {
       provide: 'PublishersServiceInterface',
-      useClass: PublishersService
+      useClass: PublishersService,
     },
     {
       provide: 'PublisherRepositoryInterface',
-      useClass: PublishersRepository
-    }
+      useClass: PublishersRepository,
+    },
   ],
 })
 export class PublishersModule {}
