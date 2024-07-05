@@ -17,7 +17,7 @@ export class AuthorsService implements AuthorsServiceInterface {
   ) {}
 
   async createAuthor(data: CreateOrEditAuthorValidation, user_id: number): Promise<AuthorDto> {
-    const author: AuthorDto = await this.repository.createAuthor(data, user_id);
+    const author = await this.repository.createAuthor(data, user_id);
 
     await this.redis.del('authors');
 
@@ -31,7 +31,7 @@ export class AuthorsService implements AuthorsServiceInterface {
 
     if (cached_data) return JSON.parse(cached_data);
 
-    const authors: AuthorDto[] = await this.repository.findAllAuthors();
+    const authors = await this.repository.findAllAuthors();
 
     this.redis.set(redis_key, JSON.stringify(authors));
 
@@ -39,7 +39,7 @@ export class AuthorsService implements AuthorsServiceInterface {
   }
 
   async findOneAuthor(id: number): Promise<AuthorDetailedDto> {
-    const author: AuthorDetailedDto = await this.repository.findOneAuthor(id);
+    const author = await this.repository.findOneAuthor(id);
 
     if (!author) throw new NotFoundException('Author');
 

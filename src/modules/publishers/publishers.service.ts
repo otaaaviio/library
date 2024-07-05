@@ -1,83 +1,45 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, Inject } from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
-import { CreateOrEditPublisherDto } from './publishers.validation';
+import { CreateOrEditPublisherValidation } from './publishers.validation';
 import { Request } from 'express';
 import { NotFoundException } from '../../exceptions/NotFoundException';
 import { verifyOwnership } from '../utils/utils';
+import { PublishersRepositoryInterface } from './interfaces/publishers-repository.interface';
+import { PublisherDto } from './dto/publisher.dto';
+import { PublishersServiceInterface } from './interfaces/publishers-service.interface';
+import { PublisherDetailedDto } from './dto/publisher-detailed.dto';
 
 @Injectable()
-export class PublishersService {
+export class PublishersService implements PublishersServiceInterface {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    @Inject('PublisherRepositoryInterface') private readonly repository: PublishersRepositoryInterface,
   ) {}
 
-  async create(data: CreateOrEditPublisherDto, user_id: number) {
-    const publisher = await this.prisma.publisher.create({
-      data: {
-        name: data.name,
-        CreatedBy: {
-          connect: {
-            id: user_id,
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+  async create(data: CreateOrEditPublisherValidation, user_id: number): Promise<PublisherDto> {
+    const publisher = await this.repository.createPublisher(data, user_id);
 
     await this.redis.del('publishers');
 
     return publisher;
   }
 
-  async findAll() {
+  async findAll(): Promise<PublisherDto[]> {
     const redis_key = 'publishers';
 
     const cached_data = await this.redis.get(redis_key);
 
     if (cached_data) return JSON.parse(cached_data);
 
-    const data = await this.prisma.publisher.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-      where: {
-        deleted_at: null,
-      },
-    });
+    const publishers = await this.repository.findAllPublishers();
 
-    this.redis.set(redis_key, JSON.stringify(data));
+    this.redis.set(redis_key, JSON.stringify(publishers));
 
-    return data;
+    return publishers;
   }
 
-  async findOne(id: number) {
-    const publisher = await this.prisma.publisher.findUnique({
-      where: {
-        id: id,
-        deleted_at: null,
-      },
-      select: {
-        id: true,
-        name: true,
-        Books: {
-          select: {
-            id: true,
-            title: true,
-          },
-        },
-        CreatedBy: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+  async findOne(id: number): Promise<PublisherDetailedDto> {
+    const publisher = await this.repository.findOnePublisher(id);
 
     if (!publisher) throw new NotFoundException('Publisher');
 
@@ -86,57 +48,27 @@ export class PublishersService {
 
   async update(
     id: number,
-    data: CreateOrEditPublisherDto,
+    data: CreateOrEditPublisherValidation,
     user: Request['user'],
-  ) {
+  ): Promise<PublisherDto>  {
     const publisher = await this.findOne(id);
 
     verifyOwnership(publisher, user);
 
-    const publisher_updated = await this.prisma.publisher.update({
-      where: {
-        id: id,
-        deleted_at: null,
-      },
-      data: {
-        ...data,
-        UpdatedBy: {
-          connect: {
-            id: user.id,
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+    const publisher_updated = await this.repository.updatePublisher(id, data, user.id);
 
     await this.redis.del('publishers');
 
     return publisher_updated;
   }
 
-  async remove(id: number, user: Request['user']) {
+  async remove(id: number, user: Request['user']): Promise<void>  {
     const publisher = await this.findOne(id);
 
     verifyOwnership(publisher, user);
 
-    const publisher_deleted = await this.prisma.publisher.update({
-      where: {
-        id: id,
-        deleted_at: null,
-      },
-      data: {
-        deleted_at: new Date(),
-      },
-      select: {
-        id: true,
-      },
-    });
+    await this.repository.deletePublisher(id);
 
     await this.redis.del('publishers');
-
-    return publisher_deleted;
   }
 }

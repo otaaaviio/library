@@ -8,22 +8,25 @@ import {
   Logger,
   Put,
   Res,
+  Inject,
   Req,
   HttpStatus,
 } from '@nestjs/common';
-import { CreateOrEditPublisherDto } from './publishers.validation';
-import { PublishersService } from './publishers.service';
+import { CreateOrEditPublisherValidation } from './publishers.validation';
+import { PublishersServiceInterface } from './interfaces/publishers-service.interface';
 
 @Controller('publishers')
 export class PublishersController {
   private logger = new Logger(PublishersController.name);
 
-  constructor(private readonly publishersService: PublishersService) {}
+  constructor(
+    @Inject('PublishersServiceInterface') private readonly service: PublishersServiceInterface,
+  ) {}
 
   @Post()
-  async create(@Body() data: CreateOrEditPublisherDto, @Res() res, @Req() req) {
+  async create(@Body() data: CreateOrEditPublisherValidation, @Res() res, @Req() req) {
     try {
-      const publisher = await this.publishersService.create(
+      const publisher = await this.service.create(
         data,
         Number(req.user.id),
       );
@@ -40,7 +43,7 @@ export class PublishersController {
   @Get()
   async findAll() {
     try {
-      return this.publishersService.findAll();
+      return this.service.findAll();
     } catch (err) {
       this.logger.error(`Failed to get publishers:\n ${err}`);
       throw err;
@@ -50,7 +53,7 @@ export class PublishersController {
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res) {
     try {
-      const publisher = await this.publishersService.findOne(Number(id));
+      const publisher = await this.service.findOne(Number(id));
       return res.status(HttpStatus.OK).json(publisher);
     } catch (err) {
       this.logger.error(`Failed to get publisher:\n ${err}`);
@@ -61,12 +64,12 @@ export class PublishersController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() data: CreateOrEditPublisherDto,
+    @Body() data: CreateOrEditPublisherValidation,
     @Res() res,
     @Req() req,
   ) {
     try {
-      const publisher = await this.publishersService.update(
+      const publisher = await this.service.update(
         Number(id),
         data,
         req.user,
@@ -83,7 +86,7 @@ export class PublishersController {
   @Delete(':id')
   async delete(@Param('id') id: string, @Res() res, @Req() req) {
     try {
-      await this.publishersService.remove(Number(id), req.user);
+      await this.service.remove(Number(id), req.user);
       return res
         .status(HttpStatus.OK)
         .send({ message: `Publisher with ID ${id} deleted successfully` });

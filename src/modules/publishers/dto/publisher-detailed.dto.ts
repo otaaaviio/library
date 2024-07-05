@@ -1,15 +1,15 @@
 import { BookDto } from '../../books/dto/book.dto';
 
-export class AuthorDetailedDto {
+export class PublisherDetailedDto {
   public id: number;
   public name: string;
   public books: BookDto[];
   public createdById: number;
 
-  constructor(id: number, name: string, Books: BookDto[], CreatedById: number) {
+  constructor(id: number, name: string, books: BookDto[], createdById: number) {
     this.id = id;
     this.name = name;
-    this.books = Books;
-    this.createdById = CreatedById;
+    this.books = books;
+    this.createdById = createdById;
   }
 }
