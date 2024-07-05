@@ -6,24 +6,29 @@ import {
   Param,
   Delete,
   Logger,
+  Inject,
   Put,
   Res,
   Req,
   HttpStatus,
 } from '@nestjs/common';
-import { CreateOrEditAuthorDto } from './authors.validation';
-import { AuthorsService } from './authors.service';
+import { CreateOrEditAuthorValidation } from './authors.validation';
+import { AuthorsServiceInterface } from './interfaces/authors-service.interface';
 
 @Controller('authors')
 export class AuthorsController {
-  private logger = new Logger(AuthorsController.name);
+  private logger: Logger;
 
-  constructor(private readonly authorsService: AuthorsService) {}
+  constructor(
+    @Inject('AuthorsServiceInterface') private readonly service: AuthorsServiceInterface
+  ) {
+    this.logger = new Logger(AuthorsController.name)
+  }
 
   @Post()
-  async create(@Body() data: CreateOrEditAuthorDto, @Res() res, @Req() req) {
+  async create(@Body() data: CreateOrEditAuthorValidation, @Res() res, @Req() req) {
     try {
-      const author = await this.authorsService.create(
+      const author = await this.service.createAuthor(
         data,
         Number(req.user.id),
       );
@@ -39,7 +44,7 @@ export class AuthorsController {
   @Get()
   async findAll() {
     try {
-      return this.authorsService.findAll();
+      return this.service.findAllAuthors();
     } catch (err) {
       this.logger.error(`Failed to get authors:\n ${err}`);
       throw err;
@@ -49,7 +54,7 @@ export class AuthorsController {
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res) {
     try {
-      const author = await this.authorsService.findOne(Number(id));
+      const author = await this.service.findOneAuthor(Number(id));
       return res.status(HttpStatus.OK).json(author);
     } catch (err) {
       this.logger.error(`Failed to get author:\n ${err}`);
@@ -60,12 +65,12 @@ export class AuthorsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() data: CreateOrEditAuthorDto,
+    @Body() data: CreateOrEditAuthorValidation,
     @Res() res,
     @Req() req,
   ) {
     try {
-      const author = await this.authorsService.update(
+      const author = await this.service.updateAuthor(
         Number(id),
         data,
         req.user,
@@ -82,7 +87,7 @@ export class AuthorsController {
   @Delete(':id')
   async delete(@Param('id') id: string, @Res() res, @Req() req) {
     try {
-      await this.authorsService.remove(Number(id), req.user);
+      await this.service.deleteAuthor(Number(id), req.user);
       return res
         .status(HttpStatus.OK)
         .send({ message: `Author with ID ${id} deleted successfully` });

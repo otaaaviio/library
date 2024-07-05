@@ -1,138 +1,70 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, Inject } from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
 import { verifyOwnership } from '../utils/utils';
-import { CreateOrEditAuthorDto } from './authors.validation';
+import { CreateOrEditAuthorValidation } from './authors.validation';
 import { Request } from 'express';
 import { NotFoundException } from '../../exceptions/NotFoundException';
+import { AuthorsRepositoryInterface } from './interfaces/authors-repository.interface';
+import { AuthorDto } from './dto/author.dto';
+import { AuthorDetailedDto } from './dto/author-detailed.dto';
+import { AuthorsServiceInterface } from './interfaces/authors-service.interface';
 
 @Injectable()
-export class AuthorsService {
+export class AuthorsService implements AuthorsServiceInterface {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    @Inject('AuthorsRepositoryInterface') private readonly repository: AuthorsRepositoryInterface
   ) {}
 
-  async create(data: CreateOrEditAuthorDto, user_id: number) {
-    const author = await this.prisma.author.create({
-      data: {
-        name: data.name,
-        CreatedBy: {
-          connect: {
-            id: user_id,
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+  async createAuthor(data: CreateOrEditAuthorValidation, user_id: number): Promise<AuthorDto> {
+    const author: AuthorDto = await this.repository.createAuthor(data, user_id);
 
     await this.redis.del('authors');
 
     return author;
   }
 
-  async findAll() {
+  async findAllAuthors(): Promise<AuthorDto[]> {
     const redis_key = 'authors';
 
     const cached_data = await this.redis.get(redis_key);
 
     if (cached_data) return JSON.parse(cached_data);
 
-    const data = await this.prisma.author.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-      where: {
-        deleted_at: null,
-      },
-    });
+    const authors: AuthorDto[] = await this.repository.findAllAuthors();
 
-    this.redis.set(redis_key, JSON.stringify(data));
+    this.redis.set(redis_key, JSON.stringify(authors));
 
-    return data;
+    return authors;
   }
 
-  async findOne(id: number) {
-    const author = await this.prisma.author.findUnique({
-      where: {
-        id: id,
-        deleted_at: null,
-      },
-      select: {
-        id: true,
-        name: true,
-        Books: {
-          select: {
-            id: true,
-            title: true,
-          },
-        },
-        CreatedBy: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+  async findOneAuthor(id: number): Promise<AuthorDetailedDto> {
+    const author: AuthorDetailedDto = await this.repository.findOneAuthor(id);
 
     if (!author) throw new NotFoundException('Author');
 
     return author;
   }
 
-  async update(id: number, data: CreateOrEditAuthorDto, user: Request['user']) {
-    const author = await this.findOne(id);
+  async updateAuthor(id: number, data: CreateOrEditAuthorValidation, user: Request['user']): Promise<AuthorDto> {
+    const author = await this.findOneAuthor(id);
 
     verifyOwnership(author, user);
 
-    const author_updated = await this.prisma.author.update({
-      where: {
-        id: id,
-        deleted_at: null,
-      },
-      data: {
-        ...data,
-        UpdatedBy: {
-          connect: {
-            id: user.id,
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+    const author_updated = await this.repository.updateAuthor(id, data, user);
 
     await this.redis.del('authors');
 
     return author_updated;
   }
 
-  async remove(id: number, user: Request['user']) {
-    const author = await this.findOne(id);
+  async deleteAuthor(id: number, user: Request['user']): Promise<void> {
+    const author = await this.findOneAuthor(id);
 
     verifyOwnership(author, user);
 
-    const author_deleted = await this.prisma.author.update({
-      where: {
-        id: id,
-        deleted_at: null,
-      },
-      data: {
-        deleted_at: new Date(),
-      },
-      select: {
-        id: true,
-      },
-    });
+    await this.repository.deleteAuthor(id);
 
     await this.redis.del('authors');
-
-    return author_deleted;
   }
 }

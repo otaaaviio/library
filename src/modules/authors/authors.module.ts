@@ -1,12 +1,21 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from '../prisma/prisma.module';
 import { RedisModule } from '../redis/redis.module';
 import { AuthorsController } from './authors.controller';
 import { AuthorsService } from './authors.service';
+import { AuthorsRepository } from './authors.repository';
 
 @Module({
-  imports: [PrismaModule, RedisModule],
+  imports: [RedisModule],
   controllers: [AuthorsController],
-  providers: [AuthorsService],
+  providers: [
+    {
+      provide: 'AuthorsRepositoryInterface',
+      useClass: AuthorsRepository,
+    },
+    {
+      provide: 'AuthorsServiceInterface',
+      useClass: AuthorsService,
+    },
+  ],
 })
 export class AuthorsModule {}
