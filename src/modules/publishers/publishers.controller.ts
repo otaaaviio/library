@@ -31,7 +31,7 @@ export class PublishersController {
     @Req() req,
   ) {
     try {
-      const publisher = await this.service.create(data, Number(req.user.id));
+      const publisher = await this.service.createPublisher(data, Number(req.user.id));
       return res.status(HttpStatus.CREATED).send({
         message: 'Publisher created successfully',
         publisher: publisher,
@@ -45,7 +45,7 @@ export class PublishersController {
   @Get()
   async findAll() {
     try {
-      return this.service.findAll();
+      return this.service.findAllPublishers();
     } catch (err) {
       this.logger.error(`Failed to get publishers:\n ${err}`);
       throw err;
@@ -55,7 +55,7 @@ export class PublishersController {
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res) {
     try {
-      const publisher = await this.service.findOne(Number(id));
+      const publisher = await this.service.findOnePublisher(Number(id));
       return res.status(HttpStatus.OK).json(publisher);
     } catch (err) {
       this.logger.error(`Failed to get publisher:\n ${err}`);
@@ -71,7 +71,7 @@ export class PublishersController {
     @Req() req,
   ) {
     try {
-      const publisher = await this.service.update(Number(id), data, req.user);
+      const publisher = await this.service.updatePublisher(Number(id), data, req.user);
       return res
         .status(HttpStatus.OK)
         .send({ message: 'Publisher updated successfully', publisher });
@@ -84,7 +84,7 @@ export class PublishersController {
   @Delete(':id')
   async delete(@Param('id') id: string, @Res() res, @Req() req) {
     try {
-      await this.service.remove(Number(id), req.user);
+      await this.service.deletePublisher(Number(id), req.user);
       return res
         .status(HttpStatus.OK)
         .send({ message: `Publisher with ID ${id} deleted successfully` });

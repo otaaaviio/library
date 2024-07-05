@@ -14,7 +14,7 @@ import { PublishersRepository } from './publishers.repository';
       useClass: PublishersService,
     },
     {
-      provide: 'PublisherRepositoryInterface',
+      provide: 'PublishersRepositoryInterface',
       useClass: PublishersRepository,
     },
   ],

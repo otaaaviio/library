@@ -3,20 +3,20 @@ import { PublisherDto } from '../dto/publisher.dto';
 import { Request } from 'express';
 
 export interface PublishersServiceInterface {
-  create(
+  createPublisher(
     data: CreateOrEditPublisherValidation,
     user_id: number,
   ): Promise<PublisherDto>;
 
-  findAll(): Promise<PublisherDto[]>;
+  findAllPublishers(): Promise<PublisherDto[]>;
 
-  findOne(id: number): Promise<PublisherDto>;
+  findOnePublisher(id: number): Promise<PublisherDto>;
 
-  update(
+  updatePublisher(
     id: number,
     data: CreateOrEditPublisherValidation,
     user: Request['user'],
   ): Promise<PublisherDto>;
 
-  remove(id: number, user: Request['user']): Promise<void>;
+  deletePublisher(id: number, user: Request['user']): Promise<void>;
 }

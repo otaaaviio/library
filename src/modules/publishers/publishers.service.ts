@@ -13,11 +13,11 @@ import { PublisherDetailedDto } from './dto/publisher-detailed.dto';
 export class PublishersService implements PublishersServiceInterface {
   constructor(
     private readonly redis: RedisService,
-    @Inject('PublisherRepositoryInterface')
+    @Inject('PublishersRepositoryInterface')
     private readonly repository: PublishersRepositoryInterface,
   ) {}
 
-  async create(
+  async createPublisher(
     data: CreateOrEditPublisherValidation,
     user_id: number,
   ): Promise<PublisherDto> {
@@ -28,7 +28,7 @@ export class PublishersService implements PublishersServiceInterface {
     return publisher;
   }
 
-  async findAll(): Promise<PublisherDto[]> {
+  async findAllPublishers(): Promise<PublisherDto[]> {
     const redis_key = 'publishers';
 
     const cached_data = await this.redis.get(redis_key);
@@ -42,7 +42,7 @@ export class PublishersService implements PublishersServiceInterface {
     return publishers;
   }
 
-  async findOne(id: number): Promise<PublisherDetailedDto> {
+  async findOnePublisher(id: number): Promise<PublisherDetailedDto> {
     const publisher = await this.repository.findOnePublisher(id);
 
     if (!publisher) throw new NotFoundException('Publisher');
@@ -50,12 +50,12 @@ export class PublishersService implements PublishersServiceInterface {
     return publisher;
   }
 
-  async update(
+  async updatePublisher(
     id: number,
     data: CreateOrEditPublisherValidation,
     user: Request['user'],
   ): Promise<PublisherDto> {
-    const publisher = await this.findOne(id);
+    const publisher = await this.findOnePublisher(id);
 
     verifyOwnership(publisher, user);
 
@@ -70,8 +70,8 @@ export class PublishersService implements PublishersServiceInterface {
     return publisher_updated;
   }
 
-  async remove(id: number, user: Request['user']): Promise<void> {
-    const publisher = await this.findOne(id);
+  async deletePublisher(id: number, user: Request['user']): Promise<void> {
+    const publisher = await this.findOnePublisher(id);
 
     verifyOwnership(publisher, user);
 

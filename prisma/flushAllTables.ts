@@ -1,17 +1,13 @@
-import {db_client} from "../src/pg";
+import { PrismaService } from '../src/modules/prisma/prisma.service';
 
 async function flushAllTables() {
-    await db_client.connect();
-
+    const prisma = new PrismaService();
     try {
         console.log('flushing all tables...')
-        await db_client.query('TRUNCATE "users", "sessions", "books", "book_images", "reviews", "authors", "publishers", "categories", "user_books" CASCADE');
-        console.log('done!');
+        await prisma.$executeRaw`TRUNCATE "users", "sessions", "books", "book_images", "reviews", "authors", "publishers", "categories", "user_books" CASCADE`;
     } catch (err) {
         console.error('Error: ', err.message);
-    } finally {
-        await db_client.end();
     }
 }
 
-flushAllTables();
+flushAllTables().then(() => console.log('done!'));
